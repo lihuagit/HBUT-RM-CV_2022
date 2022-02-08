@@ -83,11 +83,11 @@ bool ArmorFinder::findLightBlobs(const cv::Mat &src, LightBlobs &light_blobs) {
     }else{
         light_threshold = 200;
     }
-    cv::threshold(color_channel, src_bin_light, light_threshold, 255, CV_THRESH_BINARY); // 二值化对应通道
+    cv::threshold(color_channel, src_bin_light, light_threshold, 255, cv::THRESH_BINARY); // 二值化对应通道
     if (src_bin_light.empty()) return false;
     imagePreProcess(src_bin_light);                                  // 开闭运算
 
-    cv::threshold(color_channel, src_bin_dim, 140, 255, CV_THRESH_BINARY); // 二值化对应通道
+    cv::threshold(color_channel, src_bin_dim, 140, 255, cv::THRESH_BINARY); // 二值化对应通道
     if (src_bin_dim.empty()) return false;
     imagePreProcess(src_bin_dim);                                  // 开闭运算
 
@@ -100,8 +100,8 @@ bool ArmorFinder::findLightBlobs(const cv::Mat &src, LightBlobs &light_blobs) {
     std::vector<std::vector<cv::Point>> light_contours_light, light_contours_dim;
     LightBlobs light_blobs_light, light_blobs_dim;
     std::vector<cv::Vec4i> hierarchy_light, hierarchy_dim;
-    cv::findContours(src_bin_light, light_contours_light, hierarchy_light, CV_RETR_CCOMP, CV_CHAIN_APPROX_NONE);
-    cv::findContours(src_bin_dim, light_contours_dim, hierarchy_dim, CV_RETR_CCOMP, CV_CHAIN_APPROX_NONE);
+    cv::findContours(src_bin_light, light_contours_light, hierarchy_light, cv::RETR_CCOMP, cv::CHAIN_APPROX_NONE);
+    cv::findContours(src_bin_dim, light_contours_dim, hierarchy_dim, cv::RETR_CCOMP, cv::CHAIN_APPROX_NONE);
     for (int i = 0; i < light_contours_light.size(); i++) {
         if (hierarchy_light[i][2] == -1) {
             cv::RotatedRect rect = cv::minAreaRect(light_contours_light[i]);

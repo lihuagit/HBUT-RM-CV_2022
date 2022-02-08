@@ -21,12 +21,12 @@ int Energy::findFans(const cv::Mat &src) {
     static Mat src_bin;
     src_bin = src.clone();
     if (src.type() == CV_8UC3) {
-        cvtColor(src_bin, src_bin, CV_BGR2GRAY);//若读取三通道视频文件，需转换为单通道
+        cvtColor(src_bin, src_bin, cv::COLOR_BGR2GRAY);//若读取三通道视频文件，需转换为单通道
     }
     std::vector<vector<Point> > fan_contours;
     FanStruct(src_bin);//图像膨胀，防止图像断开并更方便寻找
     if (show_process)imshow("fan struct", src_bin);
-    findContours(src_bin, fan_contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
+    findContours(src_bin, fan_contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_NONE);
 
     for (auto &fan_contour : fan_contours) {
         if (!isValidFanContour(src_bin, fan_contour)) {
@@ -54,16 +54,16 @@ int Energy::findArmors(const cv::Mat &src) {
     static Mat src_bin;
     src_bin = src.clone();
     if (src.type() == CV_8UC3) {
-        cvtColor(src_bin, src_bin, CV_BGR2GRAY);//若读取三通道视频文件，需转换为单通道
+        cvtColor(src_bin, src_bin, cv::COLOR_BGR2GRAY);//若读取三通道视频文件，需转换为单通道
     }
     std::vector<vector<Point> > armor_contours;
     std::vector<vector<Point> > armor_contours_external;//用总轮廓减去外轮廓，只保留内轮廓，除去流动条的影响。
 
     ArmorStruct(src_bin);//图像膨胀，防止图像断开并更方便寻找
-    findContours(src_bin, armor_contours, CV_RETR_LIST, CV_CHAIN_APPROX_NONE);
+    findContours(src_bin, armor_contours, cv::RETR_LIST, cv::CHAIN_APPROX_NONE);
     if (show_process)imshow("armor struct", src_bin);
 
-    findContours(src_bin, armor_contours_external, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
+    findContours(src_bin, armor_contours_external, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_NONE);
     for (int i = 0; i < armor_contours_external.size(); i++)//去除外轮廓
     {
         unsigned long external_contour_size = armor_contours_external[i].size();
@@ -103,12 +103,12 @@ bool Energy::findCenterR(const cv::Mat &src) {
     static Mat src_bin;
     src_bin = src.clone();
     if (src.type() == CV_8UC3) {
-        cvtColor(src_bin, src_bin, CV_BGR2GRAY);
+        cvtColor(src_bin, src_bin, cv::COLOR_BGR2GRAY);
     }
     std::vector<vector<Point> > center_R_contours;
     CenterRStruct(src_bin);
     if (show_process)imshow("R struct", src_bin);
-    findContours(src_bin, center_R_contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
+    findContours(src_bin, center_R_contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_NONE);
     for (auto &center_R_contour : center_R_contours) {
         if (!isValidCenterRContour(center_R_contour)) {
             continue;
@@ -139,13 +139,13 @@ bool Energy::findFlowStripFan(const cv::Mat &src) {
     src_bin = src.clone();
     src_copy = src.clone();
     if (src.type() == CV_8UC3) {
-        cvtColor(src_bin, src_bin, CV_BGR2GRAY);//若读取三通道视频文件，需转换为单通道
+        cvtColor(src_bin, src_bin, cv::COLOR_BGR2GRAY);//若读取三通道视频文件，需转换为单通道
     }
     std::vector<vector<Point> > flow_strip_fan_contours;
     FlowStripFanStruct(src_bin);//图像膨胀，防止图像断开并更方便寻找
     if (show_process)imshow("flow strip fan struct", src_bin);
 
-    findContours(src_bin, flow_strip_fan_contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
+    findContours(src_bin, flow_strip_fan_contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_NONE);
     std::vector<cv::RotatedRect> candidate_flow_strip_fans;
 
     for (auto &flow_strip_fan_contour : flow_strip_fan_contours) {
@@ -175,7 +175,7 @@ bool Energy::findFlowStrip(const cv::Mat &src) {
 
     if (src_bin.type() == CV_8UC1) // 黑白图像
     {
-        cvtColor(src_bin, src_bin, COLOR_GRAY2RGB);
+        cvtColor(src_bin, src_bin, cv::COLOR_GRAY2RGB);
 
     }
     std::vector<cv::RotatedRect> candidate_target_armors = target_armors;
@@ -189,13 +189,13 @@ bool Energy::findFlowStrip(const cv::Mat &src) {
         }
     }
 
-    cvtColor(src_bin, src_bin, CV_BGR2GRAY);//若读取三通道视频文件，需转换为单通道
+    cvtColor(src_bin, src_bin, cv::COLOR_BGR2GRAY);//若读取三通道视频文件，需转换为单通道
 
     FlowStripStruct(src_bin);//图像膨胀，防止图像断开并更方便寻找
     if (show_process)imshow("flow strip struct", src_bin);
 
     std::vector<vector<Point> > flow_strip_contours;
-    findContours(src_bin, flow_strip_contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
+    findContours(src_bin, flow_strip_contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_NONE);
 
     for (auto candidate_flow_strip_fan: flow_strip_fans) {
         for (auto &flow_strip_contour : flow_strip_contours) {
@@ -261,7 +261,7 @@ bool Energy::findFlowStripWeak(const cv::Mat &src) {
 
     if (src_bin.type() == CV_8UC1) // 黑白图像
     {
-        cvtColor(src_bin, src_bin, COLOR_GRAY2RGB);
+        cvtColor(src_bin, src_bin, cv::COLOR_GRAY2RGB);
 
     }
     std::vector<cv::RotatedRect> candidate_armors = armors;
@@ -275,13 +275,13 @@ bool Energy::findFlowStripWeak(const cv::Mat &src) {
         }
     }
 
-    cvtColor(src_bin, src_bin, CV_BGR2GRAY);//若读取三通道视频文件，需转换为单通道
+    cvtColor(src_bin, src_bin, cv::COLOR_BGR2GRAY);//若读取三通道视频文件，需转换为单通道
 
     FlowStripStruct(src_bin);//图像膨胀，防止图像断开并更方便寻找
     if (show_process)imshow("weak struct", src_bin);
 
     std::vector<vector<Point> > flow_strip_contours;
-    findContours(src_bin, flow_strip_contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
+    findContours(src_bin, flow_strip_contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_NONE);
 
     for (auto &flow_strip_contour : flow_strip_contours) {
         if (!isValidFlowStripContour(flow_strip_contour)) {

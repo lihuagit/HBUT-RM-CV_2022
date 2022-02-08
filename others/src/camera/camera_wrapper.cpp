@@ -17,7 +17,7 @@ CameraWrapper::CameraWrapper(int exposure, int gain, int camera_mode, const std:
         mode(camera_mode),
         camera_cnts(2),
         camera_status(-1),
-        iplImage(nullptr),
+        // iplImage(nullptr),
         rgb_buffer(nullptr),
         channel(3),
         gain(gain),

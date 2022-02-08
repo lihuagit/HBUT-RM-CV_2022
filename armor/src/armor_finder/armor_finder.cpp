@@ -67,7 +67,7 @@ void ArmorFinder::run(cv::Mat &src) {
                 if ((target_box.rect & cv::Rect2d(0, 0, 640, 480)) == target_box.rect) { // 判断装甲板区域是否脱离图像区域
                     if (!classifier) {                                          /* 如果分类器不可用 */
                         cv::Mat roi = src(target_box.rect).clone(), roi_gray;  /* 就使用装甲区域亮点数判断是否跟丢 */
-                        cv::cvtColor(roi, roi_gray, CV_RGB2GRAY);
+                        cv::cvtColor(roi, roi_gray, cv::COLOR_RGB2GRAY);
                         cv::threshold(roi_gray, roi_gray, 180, 255, cv::THRESH_BINARY);
                         contour_area = cv::countNonZero(roi_gray);
                     }

@@ -5,6 +5,8 @@
 #include <armor_finder/armor_finder.h>
 #include <additions.h>
 #include <log.h>
+#include <iostream>
+using namespace std;
 
 template<int length>
 static double mean(RoundQueue<double, length> &vec) {

@@ -5,6 +5,7 @@
 #include <armor_finder/armor_finder.h>
 #include <config/setconfig.h>
 #include <log.h>
+#include <iostream>
 
 static bool sendTarget(Serial &serial, double x, double y, double z, uint16_t shoot_delay) {
     static short x_tmp, y_tmp, z_tmp;
@@ -16,7 +17,7 @@ static bool sendTarget(Serial &serial, double x, double y, double z, uint16_t sh
     time_t t = time(nullptr);
     if (last_time != t) {
         last_time = t;
-        cout << "Armor: fps:" << fps << ", (" << x << "," << y << "," << z << ")" << endl;
+        std::cout << "Armor: fps:" << fps << ", (" << x << "," << y << "," << z << ")" << std::endl;
         fps = 0;
     }
     fps += 1;

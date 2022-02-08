@@ -7,6 +7,7 @@
 
 #include <additions.h>
 #include <opencv2/core/core.hpp>
+#include <opencv2/imgproc/imgproc_c.h>
 #include <camera/wrapper_head.h>
 
 #ifdef Windows
