@@ -1,0 +1,25 @@
+{
+    "files.associations": {
+        "*.tcc": "cpp",
+        "fstream": "cpp",
+        "numeric": "cpp",
+        "iostream": "cpp",
+        "istream": "cpp",
+        "ostream": "cpp",
+        "system_error": "cpp",
+        "typeinfo": "cpp",
+        "new": "cpp",
+        "optional": "cpp",
+        "functional": "cpp",
+        "random": "cpp",
+        "sstream": "cpp",
+        "streambuf": "cpp",
+        "condition_variable": "cpp",
+        "complex": "cpp",
+        "string": "cpp",
+        "vector": "cpp",
+        "limits": "cpp",
+        "utility": "cpp",
+        "core": "cpp"
+    }
+}

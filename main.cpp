@@ -49,6 +49,7 @@ ArmorFinder armor_finder(mcu_data.enemy_color, serial, PROJECT_DIR"/tools/para/"
 Energy energy(serial, mcu_data.enemy_color);
 
 int main(int argc, char *argv[]) {
+    cout<<"PROJECT_DIR: "<<PROJECT_DIR<<endl;
     processOptions(argc, argv);             // 处理命令行参数
     thread receive(uartReceive, &serial);   // 开启串口接收线程
 
@@ -57,13 +58,13 @@ int main(int argc, char *argv[]) {
         cout << "Input 1 for camera, 0 for video files" << endl;
         cin >> from_camera;
     }
-
+    bool flag=true;
     while (true) {
         // 打开视频源
         if (from_camera) {
             video = new CameraWrapper(ARMOR_CAMERA_EXPOSURE, ARMOR_CAMERA_GAIN, 2);
         } else {
-            video = new VideoWrapper(PROJECT_DIR"/video/blue_big.avi");
+            video = new VideoWrapper(PROJECT_DIR"/1.mp4");
         }
         if (video->init()) {
             LOGM("video_source initialization successfully.");
@@ -145,6 +146,11 @@ int main(int argc, char *argv[]) {
                 }
                 last_state = curr_state;//更新上一帧状态
                 if(run_by_frame) cv::waitKey(0);
+
+                if(flag){
+                    flag=false;
+                    cv::waitKey(1);
+                }
             });
         } while (ok);
         delete video;

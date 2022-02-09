@@ -17,7 +17,7 @@ CameraWrapper::CameraWrapper(int exposure, int gain, int camera_mode, const std:
         mode(camera_mode),
         camera_cnts(2),
         camera_status(-1),
-        // iplImage(nullptr),
+        iplImage(nullptr),
         rgb_buffer(nullptr),
         channel(3),
         gain(gain),
@@ -83,8 +83,8 @@ bool CameraWrapper::init() {
     }
     LOGM("successfully loaded %s!", filepath);
 #elif defined(Linux)
-    CameraReadParameterFromFile(h_camera, PROJECT_DIR"/others/MV-UB31-Group0.config");
-    CameraLoadParameter(h_camera, PARAMETER_TEAM_A);
+    CameraReadParameterFromFile(h_camera, PROJECT_DIR"/armor.Config");
+    // CameraLoadParameter(h_camera, PARAMETER_TEAM_A);
     CameraSetAeState(h_camera, false);
     CameraSetExposureTime(h_camera, exposure * 1000);
     CameraSetAnalogGain(h_camera, gain);

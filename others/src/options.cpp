@@ -7,7 +7,7 @@
 #include <cstring>
 #include <map>
 
-bool show_armor_box = false;
+bool show_armor_box = true;
 bool show_armor_boxes = false;
 bool show_light_blobs = false;
 bool show_origin = false;
