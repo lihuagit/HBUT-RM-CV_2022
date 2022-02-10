@@ -31,7 +31,7 @@ using namespace std;
 McuData mcu_data = {    // 单片机端回传结构体
         0,              // 当前云台yaw角
         0,              // 当前云台pitch角
-        ARMOR_STATE,    // 当前状态，自瞄-大符-小符
+        SMALL_ENERGY_STATE,    // 当前状态，自瞄-大符-小符
         0,              // 云台角度标记位
         0,              // 是否为反陀螺模式
         ENEMY_RED,      // 敌方颜色
@@ -64,7 +64,9 @@ int main(int argc, char *argv[]) {
         if (from_camera) {
             video = new CameraWrapper(ARMOR_CAMERA_EXPOSURE, ARMOR_CAMERA_GAIN, 2);
         } else {
-            video = new VideoWrapper(PROJECT_DIR"/1.mp4");
+            // video = new VideoWrapper(PROJECT_DIR"/video/1.mp4");
+            // video = new VideoWrapper(PROJECT_DIR"/video/8-11东大3No.4.mp4");
+            video = new VideoWrapper(PROJECT_DIR"/video/8-11东大3No.4-大符-1.mp4");
         }
         if (video->init()) {
             LOGM("video_source initialization successfully.");
@@ -86,6 +88,7 @@ int main(int argc, char *argv[]) {
             CNT_TIME("Total", {
                 if (curr_state != ARMOR_STATE) {//大能量机关模式
                     if (last_state == ARMOR_STATE) {//若上一帧不是大能量机关模式，即刚往完成切换，则需要初始化
+                        cout<<111<<endl;
                         destroyAllWindows();
                         if (from_camera) {
                             delete video;
@@ -149,7 +152,8 @@ int main(int argc, char *argv[]) {
 
                 if(flag){
                     flag=false;
-                    cv::waitKey(1);
+                    cv::waitKey(0);
+		    cv::waitKey(0);
                 }
             });
         } while (ok);
