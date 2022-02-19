@@ -31,10 +31,10 @@ using namespace std;
 McuData mcu_data = {    // 单片机端回传结构体
         0,              // 当前云台yaw角
         0,              // 当前云台pitch角
-        SMALL_ENERGY_STATE,    // 当前状态，自瞄-大符-小符
+        ARMOR_STATE,    // 当前状态，自瞄-大符-小符
         0,              // 云台角度标记位
         0,              // 是否为反陀螺模式
-        ENEMY_RED,      // 敌方颜色
+        ENEMY_BLUE,      // 敌方颜色
         0,              // 能量机关x轴补偿量
         0,              // 能量机关y轴补偿量
 };
@@ -66,7 +66,7 @@ int main(int argc, char *argv[]) {
         } else {
             // video = new VideoWrapper(PROJECT_DIR"/video/1.mp4");
             // video = new VideoWrapper(PROJECT_DIR"/video/8-11东大3No.4.mp4");
-            video = new VideoWrapper(PROJECT_DIR"/video/8-11东大3No.4-大符-1.mp4");
+            video = new VideoWrapper(PROJECT_DIR"/video/8-11东大3No.4-装甲板-1.mp4");
         }
         if (video->init()) {
             LOGM("video_source initialization successfully.");
@@ -133,7 +133,7 @@ int main(int argc, char *argv[]) {
                         }
                     }
                     CNT_TIME(STR_CTR(WORD_GREEN, "read img"), {
-                        if(!checkReconnect(video->read(src))) continue;
+                        if(!checkReconnect(video->read(src))) break;
                     });
 #ifdef GIMBAL_FLIP_MODE
                     flip(src, src, GIMBAL_FLIP_MODE);

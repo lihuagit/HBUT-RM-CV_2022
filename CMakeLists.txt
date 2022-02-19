@@ -23,7 +23,13 @@ IF(CCACHE_FOUND)
     MESSAGE("< Use ccache for compiler >")
 ENDIF()
 
-FIND_PACKAGE(Eigen3 REQUIRED)
+IF (CMAKE_SYSTEM_NAME MATCHES "Linux")
+    FIND_PACKAGE(Eigen3 REQUIRED)
+ELSEIF (CMAKE_SYSTEM_NAME MATCHES "Windows")
+    SET(EIGEN3_INCLUDE_DIR D:/eigen-3.4.0)
+    SET(OpenCV_DIR D:/opencv4.5.4/mingw_opencv_contrib)
+ENDIF()
+
 FIND_PACKAGE(OpenCV 4 REQUIRED)
 FIND_PACKAGE(Threads)
 
