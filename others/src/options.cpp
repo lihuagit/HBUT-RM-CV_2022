@@ -20,6 +20,8 @@ bool show_energy = true;
 bool save_mark = false;
 bool show_info = false;
 bool run_by_frame = false;
+bool is_kalman=false;
+bool is_kalman_map=false;
 
 // 使用map保存所有选项及其描述和操作，加快查找速度。
 std::map<std::string, std::pair<std::string, void(*)(void)>> options = {
