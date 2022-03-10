@@ -52,6 +52,7 @@ int main(int argc, char *argv[]) {
     is_kalman=true;
     show_origin=false;
     show_armor_box=true;
+    wait_uart=true;
 
     cout<<"PROJECT_DIR: "<<PROJECT_DIR<<endl;
     processOptions(argc, argv);             // 处理命令行参数

@@ -181,7 +181,7 @@ bool Serial::ReadData(unsigned char *buffer,  unsigned int length) {
 using namespace std;
 
 string get_uart_dev_name() {
-    FILE *ls = popen("ls /dev/ttyUSB* --color=never", "r");
+    FILE *ls = popen("ls /dev/ttyACM* --color=never", "r");
     char name[20] = {0};
     fscanf(ls, "%s", name);
     return name;
