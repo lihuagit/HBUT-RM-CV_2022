@@ -85,9 +85,9 @@ bool CameraWrapper::init() {
 #elif defined(Linux)
     CameraReadParameterFromFile(h_camera, PROJECT_DIR"/others/armor_lihua.config");
     // CameraLoadParameter(h_camera, PARAMETER_TEAM_A);
-    CameraSetAeState(h_camera, false);
-    CameraSetExposureTime(h_camera, exposure * 1000);
-    CameraSetAnalogGain(h_camera, gain);
+    // CameraSetAeState(h_camera, false);
+    // CameraSetExposureTime(h_camera, exposure * 1000);
+    // CameraSetAnalogGain(h_camera, gain);
 #endif
     double t;
     int g;
