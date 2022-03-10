@@ -17,7 +17,7 @@ static bool sendTarget(Serial &serial, int16_t x, int16_t y /*double z, uint16_t
     time_t t = time(nullptr);
     if (last_time != t) {
         last_time = t;
-        std::cout << "Armor: fps:" << fps << ", (" << x << "," << y << std::endl;//<< "," << z << ")" << std::endl;
+        std::cout << "Armor: fps:" << fps << ", (" << x << "," << y << ")" << std::endl;
         fps = 0;
     }
     fps += 1;
@@ -26,7 +26,7 @@ static bool sendTarget(Serial &serial, int16_t x, int16_t y /*double z, uint16_t
     x_tmp = static_cast<short>(x * (32768 - 1) / 100);
     y_tmp = static_cast<short>(y * (32768 - 1) / 100);
 
-    printf("\nx_tmp = %d, y_tmp = %d\nx = %d, y = %d\n", x_tmp, y_tmp, x, y);
+    // printf("\nx_tmp = %d, y_tmp = %d\nx = %d, y = %d\n", x_tmp, y_tmp, x, y); // for debug
 
     //z_tmp = static_cast<short>(z * (32768 - 1) / 1000);
 
@@ -46,12 +46,12 @@ static bool sendTarget(Serial &serial, int16_t x, int16_t y /*double z, uint16_t
     // buff[7] = static_cast<char>((shoot_delay >> 8) & 0xFF);
     // buff[8] = static_cast<char>((shoot_delay >> 0) & 0xFF);
     buff[5] = 'e';
+    // for debug
+    // for(int i = 0 ; i < sizeof(buff) ; i++) {
+    //     printf("%02x ", buff[i]);
+    // }
 
-    for(int i = 0 ; i < sizeof(buff) ; i++) {
-        printf("%02x ", buff[i]);
-    }
-
-    printf("\n");
+    // printf("\n"); // fordebug
 //    if(buff[7]<<8 | buff[8])
 //        cout << (buff[7]<<8 | buff[8]) << endl;
     return serial.WriteData(buff, sizeof(buff));
