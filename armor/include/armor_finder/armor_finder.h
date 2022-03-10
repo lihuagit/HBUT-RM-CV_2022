@@ -13,6 +13,8 @@
 #include <serial.h>
 #include <armor_finder/classifier/classifier.h>
 #include <additions.h>
+#include <kalman/slove.h>
+#include <options.h>
 
 #define BLOB_RED    ENEMY_RED
 #define BLOB_BLUE   ENEMY_BLUE
@@ -133,6 +135,10 @@ private:
     bool sendBoxPosition(uint16_t shoot);               // 和主控板通讯
 public:
     void run(cv::Mat &src);                             // 自瞄主函数
+    kal_test kal_x;
+    kal_test kal_y;
+    cv::Rect2d kal_rect;
+    void kal_run();
 };
 
 #endif /* _ARMOR_FINDER_H_ */

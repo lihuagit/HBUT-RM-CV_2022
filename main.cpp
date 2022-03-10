@@ -49,6 +49,10 @@ ArmorFinder armor_finder(mcu_data.enemy_color, serial, PROJECT_DIR"/tools/para/"
 Energy energy(serial, mcu_data.enemy_color);
 
 int main(int argc, char *argv[]) {
+    is_kalman=true;
+    show_origin=false;
+    show_armor_box=true;
+
     cout<<"PROJECT_DIR: "<<PROJECT_DIR<<endl;
     processOptions(argc, argv);             // 处理命令行参数
     thread receive(uartReceive, &serial);   // 开启串口接收线程
@@ -72,6 +76,7 @@ int main(int argc, char *argv[]) {
             LOGM("video_source initialization successfully.");
         } else {
             LOGW("video_source unavailable!");
+            break;
         }
 
         // 跳过前10帧噪声图像。
@@ -150,11 +155,11 @@ int main(int argc, char *argv[]) {
                 last_state = curr_state;//更新上一帧状态
                 if(run_by_frame) cv::waitKey(0);
 
-                if(flag){
-                    flag=false;
-                    cv::waitKey(0);
-		    cv::waitKey(0);
-                }
+                // if(flag && !from_camera){
+                //     flag=false;
+                //     cv::waitKey(0);
+		        //     cv::waitKey(0);
+                // }
             });
         } while (ok);
         delete video;

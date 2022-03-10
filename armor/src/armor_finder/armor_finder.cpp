@@ -17,7 +17,6 @@
 
 #define LOG_LEVEL LOG_NONE
 #include <log.h>
-#include <options.h>
 #include <show_images/show_images.h>
 #include <opencv2/highgui.hpp>
 #include <armor_finder/armor_finder.h>
@@ -99,13 +98,36 @@ end:
         sendBoxPosition(0);
     }
 
+    if(target_box.rect != cv::Rect2d() && is_kalman){
+        kal_run();
+    }
+
     if(target_box.rect != cv::Rect2d()){
         last_box = target_box;
     }
 
     if (show_armor_box) {                 // 根据条件显示当前目标装甲板
-        showArmorBox("box", src, target_box);
+        if(is_kalman)
+            showArmorBox("box", src, target_box,kal_rect);
+        else showArmorBox("box", src, target_box);
         cv::waitKey(1);
     }
 }
 
+// kal_test kal_x;
+// kal_test kal_y;
+// cv::Rect2d kal_rect;
+void ArmorFinder::kal_run(){
+    cv::Point2f temp=target_box.getCenter();
+    double newx,newy;
+    // std::cout<<"now_time"<<std::endl;
+    // std::cout<<now_time<<std::endl<<std::endl;
+    newx=kal_x.slove(temp.x,0);
+    newy=kal_y.slove(temp.y,0);
+    int w=target_box.rect.width;
+    int h=target_box.rect.height;
+    kal_rect=cv::Rect2f(newx-(w/2),newy-(h/2),w,h);
+    // cv::Rect2f r2f(newx-(w/2),newy-(h/2),w,h);
+    // rectangle(src, r2f, cv::Scalar(0, 0, 255), 2);
+    // circle(src, cv::Point2f(newx,newy) , 5, cv::Scalar(0, 0, 255),-1);  // -1 表示圆被填充，正数表示线条粗细
+}
