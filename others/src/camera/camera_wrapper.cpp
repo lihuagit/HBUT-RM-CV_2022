@@ -83,7 +83,7 @@ bool CameraWrapper::init() {
     }
     LOGM("successfully loaded %s!", filepath);
 #elif defined(Linux)
-    CameraReadParameterFromFile(h_camera, PROJECT_DIR"/others/armor_lihua.config");
+    CameraReadParameterFromFile(h_camera, PROJECT_DIR"/others/armor_lihua_3.config");
     // CameraLoadParameter(h_camera, PARAMETER_TEAM_A);
     // CameraSetAeState(h_camera, false);
     // CameraSetExposureTime(h_camera, exposure * 1000);

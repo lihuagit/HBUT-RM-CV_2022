@@ -7,9 +7,9 @@
 #include <log.h>
 #include <iostream>
 
-static bool sendTarget(Serial &serial, int16_t x, int16_t y /*double z, uint16_t shoot_delay*/) {
+static bool sendTarget(Serial &serial, int16_t x, int16_t y , double z/*, uint16_t shoot_delay*/) {
     static short x_tmp, y_tmp, z_tmp;
-    uint8_t buff[6];
+    uint8_t buff[8];
 
 #ifdef WITH_COUNT_FPS
     static time_t last_time = time(nullptr);
@@ -38,6 +38,7 @@ static bool sendTarget(Serial &serial, int16_t x, int16_t y /*double z, uint16_t
 
     *((uint16_t*)(buff + 1)) = x;
     *((uint16_t*)(buff + 3)) = y;
+    *((uint16_t*)(buff + 5)) = z;
 
 
 
@@ -45,7 +46,7 @@ static bool sendTarget(Serial &serial, int16_t x, int16_t y /*double z, uint16_t
     // buff[6] = static_cast<char>((z_tmp >> 0) & 0xFF);
     // buff[7] = static_cast<char>((shoot_delay >> 8) & 0xFF);
     // buff[8] = static_cast<char>((shoot_delay >> 0) & 0xFF);
-    buff[5] = 'e';
+    buff[7] = 'e';
     // for debug
     // for(int i = 0 ; i < sizeof(buff) ; i++) {
     //     printf("%02x ", buff[i]);
@@ -62,11 +63,15 @@ bool ArmorFinder::sendBoxPosition(uint16_t shoot_delay) {
     if (shoot_delay) {
         LOGM(STR_CTR(WORD_BLUE, "next box %dms"), shoot_delay);
     }
-    auto rect = target_box.rect;
+    cv::Rect2d rect;
+    if(is_kalman) rect=kal_rect;
+    else rect = target_box.rect;
     int16_t dx = rect.x + rect.width / 2 - IMAGE_CENTER_X;
     int16_t dy = -(rect.y + rect.height / 2 - IMAGE_CENTER_Y);
     // double yaw = atan(dx / FOCUS_PIXAL) * 180 / PI;
     // double pitch = atan(dy / FOCUS_PIXAL) * 180 / PI;
-    // double dist = DISTANCE_HEIGHT / rect.height;
-    return sendTarget(serial, dx, dy/* dist, shoot_delay*/);
+    // dy+=20;
+    dy+=15;
+    double dist = DISTANCE_HEIGHT / rect.height;
+    return sendTarget(serial, dx, dy, dist/*, shoot_delay*/);
 }

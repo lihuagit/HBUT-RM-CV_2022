@@ -179,6 +179,10 @@ void showArmorBox(std::string windows_name, const cv::Mat &src, const ArmorBox &
     }else{
         rectangle(image2show, box.rect, Scalar(0, 255, 0), 1);
     }
+    int w=image2show.size().width;
+    int h=image2show.size().height;
+    line(image2show,Point2d(0,h/2),Point2d(w,h/2),Scalar(0,0,255),1);
+    line(image2show,Point2d(w/2,0),Point2d(w/2,h),Scalar(0,0,255),1);
     if(is_kalman) rectangle(image2show, kal_box, Scalar(0, 0, 255), 1);
 
     char dist[10];

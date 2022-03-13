@@ -53,6 +53,7 @@ int main(int argc, char *argv[]) {
     show_origin=false;
     show_armor_box=true;
     wait_uart=true;
+    save_video=true;
 
     cout<<"PROJECT_DIR: "<<PROJECT_DIR<<endl;
     processOptions(argc, argv);             // 处理命令行参数
@@ -61,7 +62,8 @@ int main(int argc, char *argv[]) {
     int from_camera = 1;                    // 根据条件选择视频源
     if (!run_with_camera) {
         cout << "Input 1 for camera, 0 for video files" << endl;
-        cin >> from_camera;
+        // cin >> from_camera;
+        from_camera=true;
     }
     bool flag=true;
     while (true) {
