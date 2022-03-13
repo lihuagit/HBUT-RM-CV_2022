@@ -33,7 +33,7 @@ class kal_test{
 public:
     kal_test();
     int slove(int x,double t);
-    void Init(int x=0,int y=0);
+    void Init(int x,double t);
 };
 
 #endif

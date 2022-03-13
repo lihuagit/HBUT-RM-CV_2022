@@ -20,8 +20,9 @@ bool ArmorFinder::stateSearchingTarget(cv::Mat &src) {
             return true;
         }
         // 初始化卡尔曼参数
-        kal_x.Init(target_box.rect.x,0);
-        kal_y.Init(target_box.rect.y,0);
+        getsystime(kal_t);
+        kal_x.Init(target_box.rect.x,kal_t);
+        kal_y.Init(target_box.rect.y,kal_t);
     } else {
         target_box = ArmorBox();
         anti_switch_cnt++;
