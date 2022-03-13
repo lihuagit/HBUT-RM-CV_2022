@@ -137,6 +137,7 @@ public:
     void run(cv::Mat &src);                             // 自瞄主函数
     kal_test kal_x;
     kal_test kal_y;
+    systime kal_t;
     cv::Rect2d kal_rect;
     void kal_run();
 };

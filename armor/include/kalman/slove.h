@@ -32,7 +32,7 @@ class kal_test{
     _Kalman kalman;
 public:
     kal_test();
-    int slove(int x,int t);
+    int slove(int x,double t);
     void Init(int x=0,int y=0);
 };
 

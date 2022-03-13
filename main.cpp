@@ -34,7 +34,7 @@ McuData mcu_data = {    // 单片机端回传结构体
         ARMOR_STATE,    // 当前状态，自瞄-大符-小符
         0,              // 云台角度标记位
         0,              // 是否为反陀螺模式
-        ENEMY_RED,      // 敌方颜色
+        ENEMY_BLUE,      // 敌方颜色
         0,              // 能量机关x轴补偿量
         0,              // 能量机关y轴补偿量
 };
@@ -62,8 +62,8 @@ int main(int argc, char *argv[]) {
     int from_camera = 1;                    // 根据条件选择视频源
     if (!run_with_camera) {
         cout << "Input 1 for camera, 0 for video files" << endl;
-        // cin >> from_camera;
-        from_camera=true;
+        cin >> from_camera;
+        // from_camera=true;
     }
     bool flag=true;
     while (true) {

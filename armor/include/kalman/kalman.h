@@ -63,13 +63,16 @@ public:
     }
         int ans=0;
     Matrix_x1d update(Matrix_z1d z_k, double t) {
+        double dt = t-last_t;
         // 设置转移矩阵中的时间项
         for (int i = 1; i < V_X; i++) {
-            A(i - 1, i) = t - last_t;
+            A(i - 1, i) = dt;
             // H(0,1) = A(i - 1, i) = t - last_t;
             // H(0,1) = 1/H(0,1);
             // H(0,1) = A(i - 1, i) = 0;
         }
+        if(dt!=0)
+            x_k1(0,1)=(z_k(0,0)-x_k1(0,0))/dt;
         last_t = t;
 
         // 预测下一时刻的值

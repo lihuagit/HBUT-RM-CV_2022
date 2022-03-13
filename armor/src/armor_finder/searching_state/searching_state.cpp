@@ -19,8 +19,9 @@ bool ArmorFinder::stateSearchingTarget(cv::Mat &src) {
             anti_switch_cnt = 0;
             return true;
         }
-        kal_x.Init(target_box.rect.x);
-        kal_y.Init(target_box.rect.y);
+        // 初始化卡尔曼参数
+        kal_x.Init(target_box.rect.x,0);
+        kal_y.Init(target_box.rect.y,0);
     } else {
         target_box = ArmorBox();
         anti_switch_cnt++;
