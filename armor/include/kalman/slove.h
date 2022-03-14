@@ -32,6 +32,7 @@ class kal_test{
     _Kalman kalman;
 public:
     kal_test();
+    int last_x;
     int slove(int x,double t);
     void Init(int x,double t);
 };
