@@ -16,9 +16,10 @@ kal_test::kal_test(){
 }
 
 int kal_test::slove(int x,double t){
-    int tmpx=x;
-    x+=x-last_x;
-    last_x=tmpx;
+    int dx=x-last_x;
+    last_x=x;
+    x+=2*dx;
+    return x;
     _Kalman::Matrix_z1d temp{x};
     _Kalman::Matrix_x1d temp2;
     // std::cout<<"t:";
