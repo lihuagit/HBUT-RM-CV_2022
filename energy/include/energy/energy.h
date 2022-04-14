@@ -61,7 +61,7 @@ private:
     int last_mode;//上一帧的能量机关状态
     int manual_delta_x, manual_delta_y;//手动微调量
     int extra_delta_x, extra_delta_y;//在风车运动到最高点附近的额外补偿量
-
+    
     float target_polar_angle;//待击打装甲板的极坐标角度
     float last_target_polar_angle_judge_change;//上一帧待击打装甲板的极坐标角度（用于判断目标切换）
     float last_target_polar_angle_judge_rotation;//上一帧待击打装甲板的极坐标角度（用于判断旋向）
