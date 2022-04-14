@@ -14,6 +14,7 @@
 
 #include <kalman/kalman.h>
 #include <iostream>
+#include <options.h>
 
 constexpr int S=2;
 
@@ -32,9 +33,9 @@ class kal_test{
     _Kalman kalman;
 public:
     kal_test();
-    int last_x;
-    int slove(int x,double t);
-    void Init(int x,double t);
+    double last_x;
+    double slove(double x,double t);
+    void Init(double x,double t);
 };
 
 #endif

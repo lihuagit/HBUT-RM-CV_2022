@@ -70,6 +70,7 @@ bool CameraWrapper::init() {
 
     rgb_buffer = (unsigned char *) malloc(tCapability.sResolutionRange.iHeightMax *
                                           tCapability.sResolutionRange.iWidthMax * 3);
+
 #ifdef Windows
     char filepath[200];
     sprintf(filepath, PROJECT_DIR"/others/%s.Config", name.data());
@@ -89,6 +90,7 @@ bool CameraWrapper::init() {
     // CameraSetExposureTime(h_camera, exposure * 1000);
     // CameraSetAnalogGain(h_camera, gain);
 #endif
+    CameraReadParameterFromFile(h_camera, PROJECT_DIR"/others/armor_lihua_3.config");
     double t;
     int g;
     CameraGetExposureTime(h_camera, &t);

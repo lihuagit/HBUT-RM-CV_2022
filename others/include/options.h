@@ -26,6 +26,7 @@ extern bool show_info;
 extern bool run_by_frame;
 extern bool is_kalman;
 extern bool is_kalman_map;
+extern int shoot_delay_t;
 
 
 void processOptions(int argc, char **argv);

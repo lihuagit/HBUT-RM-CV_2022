@@ -100,6 +100,10 @@ void showArmorBox(std::string windows_name, const cv::Mat &src, const ArmorBox &
     }else{
         rectangle(image2show, box.rect, Scalar(0, 255, 0), 1);
     }
+    int w=image2show.size().width;
+    int h=image2show.size().height;
+    line(image2show,Point2d(0,h/2),Point2d(w,h/2),Scalar(0,0,255),1);
+    line(image2show,Point2d(w/2,0),Point2d(w/2,h),Scalar(0,0,255),1);
 
     char dist[10];
     sprintf(dist, "%.1f", box.getBoxDistance());
@@ -198,7 +202,7 @@ void showArmorBox(std::string windows_name, const cv::Mat &src, const ArmorBox &
                 Scalar(0, 0, 255));
     else if (box.id != 0)
         LOGE_INFO("Invalid box id:%d!", box.id);
-    // if (save_video) saveVideos(image2show);//保存视频
+    if (save_video) saveVideos(image2show);//保存视频
     imshow(windows_name, image2show);
 }
 

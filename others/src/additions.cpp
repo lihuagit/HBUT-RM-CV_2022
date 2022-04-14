@@ -30,12 +30,22 @@ extern Energy energy;
 
 void uartReceive(Serial *pSerial) {
     char buffer[40];
+    float dt;
+    cout<<"kfjldsjkfljdslfj"<<endl;
     LOGM(STR_CTR(WORD_LIGHT_WHITE, "data receive start!"));
     while (true) {
+        // cout<<"11111"<<endl;
         memset(buffer, 0, sizeof(buffer));
-        pSerial->ReadData((uint8_t *) buffer, sizeof(mcu_data)+1);
-        if (buffer[sizeof(mcu_data)] == '\n') {
-            memcpy(&mcu_data, buffer, sizeof(mcu_data));
+        pSerial->ReadData((uint8_t *) buffer, 15);
+        // buffer[sizeof(armor_finder.word_yaw)]='\0';
+        // cout<<(buffer)<<endl;
+        // cout<<"222222"<<endl;
+        if (buffer[sizeof(armor_finder.word_yaw)] == '\n' || true) {
+            // memcpy(&armor_finder.word_yaw, buffer, sizeof(armor_finder.word_yaw));
+            if(strlen(buffer)<10) continue;
+            sscanf(buffer,"%f",&(armor_finder.word_yaw));
+            // printf("%f\n",armor_finder.word_yaw);
+            // cout<<"dt:"<<dt<<endl;
 //            LOGM("Get, state:%c, mark:%d!", mcu_data.state, (int) mcu_data.mark);
 //            LOGM("Get yaw: %f, pitch: %f!", mcu_data.curr_yaw, mcu_data.curr_pitch);
 //            LOGM("Get delta x: %d, delta y: %d!", mcu_data.delta_x, mcu_data.delta_y);

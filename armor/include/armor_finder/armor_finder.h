@@ -138,6 +138,7 @@ public:
     kal_test kal_x;
     kal_test kal_y;
     systime kal_t;
+    float word_yaw;
     cv::Rect2d kal_rect;
     void kal_run();
 };

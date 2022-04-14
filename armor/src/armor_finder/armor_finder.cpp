@@ -124,7 +124,8 @@ void ArmorFinder::kal_run(){
     // std::cout<<now_time<<std::endl<<std::endl;
     getsystime(kal_t);
     newx=kal_x.slove(temp.x,kal_t);
-    newy=kal_y.slove(temp.y,kal_t);
+    // newy=kal_y.slove(temp.y,kal_t);
+    newy=temp.y;
     int w=target_box.rect.width;
     int h=target_box.rect.height;
     kal_rect=cv::Rect2f(newx-(w/2),newy-(h/2),w,h);

@@ -247,7 +247,14 @@ bool Serial::WriteData(const unsigned char *pData, unsigned int length) {
 
 bool Serial::ReadData(unsigned char *buffer, unsigned int length) {
     int cnt = 0, curr = 0;
-    while ((curr = read(fd, buffer + cnt, length - cnt)) > 0 && (cnt += curr) < length);
+    // while ((curr = read(fd, buffer + cnt, length - cnt)) > 0 && (cnt += curr) < length);
+    int len=0;
+    while(len<=0){
+        len=read(fd, buffer , length );
+        // std::cout<<len<<std::endl;
+    }
+        // std::cout<<len<<std::endl;
+     return true;
     if (curr < 0) {
         LOGE("Serial offline!");
         close(fd);
