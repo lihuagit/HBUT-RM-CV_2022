@@ -6,7 +6,7 @@
 #include <config/setconfig.h>
 #include <log.h>
 #include <iostream>
-#include<kalman/slove.h>
+#include <predictor/PredictorKalman.h>
 #include <string.h>
 
 static bool sendTarget(Serial &serial, float x, int16_t y , double z/*, uint16_t shoot_delay*/) {

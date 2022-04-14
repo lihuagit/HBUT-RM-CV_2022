@@ -13,7 +13,7 @@
 #include <serial.h>
 #include <armor_finder/classifier/classifier.h>
 #include <additions.h>
-#include <kalman/slove.h>
+#include <predictor/PredictorKalman.h>
 #include <options.h>
 
 #define BLOB_RED    ENEMY_RED
