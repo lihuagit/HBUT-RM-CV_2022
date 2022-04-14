@@ -31,10 +31,11 @@ using namespace std;
 McuData mcu_data = {    // 单片机端回传结构体
         0,              // 当前云台yaw角
         0,              // 当前云台pitch角
-        ARMOR_STATE,    // 当前状态，自瞄-大符-小符
+       ARMOR_STATE,    // 当前状态，自瞄-大符-小符
+        // BIG_ENERGY_STATE,
         0,              // 云台角度标记位
         0,              // 是否为反陀螺模式
-        ENEMY_BLUE,      // 敌方颜色
+        ENEMY_RED,      // 敌方颜色
         0,              // 能量机关x轴补偿量
         0,              // 能量机关y轴补偿量
 };
@@ -49,11 +50,20 @@ ArmorFinder armor_finder(mcu_data.enemy_color, serial, PROJECT_DIR"/tools/para/"
 Energy energy(serial, mcu_data.enemy_color);
 
 int main(int argc, char *argv[]) {
-    is_kalman=true;
-    show_origin=false;
+    is_kalman=false;
     show_armor_box=true;
+     show_origin=true;
+    // show_armor_box=true;
     wait_uart=true;
     save_video=true;
+    shoot_delay_t=350;   // 射击延迟 for 3m
+    // shoot_delay_t=150;   // 射击延迟    for 1m
+
+    // for 大风车
+    //show_process=false;
+    //show_energy=false;
+    //show_process=true;
+    //show_energy=true;
 
     cout<<"PROJECT_DIR: "<<PROJECT_DIR<<endl;
     processOptions(argc, argv);             // 处理命令行参数
@@ -62,8 +72,8 @@ int main(int argc, char *argv[]) {
     int from_camera = 1;                    // 根据条件选择视频源
     if (!run_with_camera) {
         cout << "Input 1 for camera, 0 for video files" << endl;
-        cin >> from_camera;
-        // from_camera=true;
+        // cin >> from_camera;
+        from_camera=true;
     }
     bool flag=true;
     while (true) {
