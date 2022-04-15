@@ -50,12 +50,13 @@ ArmorFinder armor_finder(mcu_data.enemy_color, serial, PROJECT_DIR"/tools/para/"
 Energy energy(serial, mcu_data.enemy_color);
 
 int main(int argc, char *argv[]) {
-    is_kalman=false;
+
+///////////////////////调参区begin///////////////////
     show_armor_box=true;
      show_origin=true;
     // show_armor_box=true;
     wait_uart=true;
-    save_video=true;
+    // save_video=true;
     shoot_delay_t=350;   // 射击延迟 for 3m
     // shoot_delay_t=150;   // 射击延迟    for 1m
 
@@ -64,6 +65,12 @@ int main(int argc, char *argv[]) {
     //show_energy=false;
     //show_process=true;
     //show_energy=true;
+    
+    // 预测器
+    is_predictor=false;
+    is_predictorKalman=false;
+    is_predictorEKF=false;
+///////////////////////调参区end///////////////////
 
     cout<<"PROJECT_DIR: "<<PROJECT_DIR<<endl;
     processOptions(argc, argv);             // 处理命令行参数
