@@ -19,10 +19,6 @@ bool ArmorFinder::stateSearchingTarget(cv::Mat &src) {
             anti_switch_cnt = 0;
             return true;
         }
-        // 初始化卡尔曼参数
-        getsystime(now_t);
-        kal_yaw.Init(target_box.rect.x,now_t);
-        
     } else {
         target_box = ArmorBox();
         anti_switch_cnt++;
