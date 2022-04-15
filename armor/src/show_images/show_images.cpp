@@ -118,7 +118,7 @@ void showArmorBox(std::string windows_name, const cv::Mat &src, const ArmorBox &
                 Scalar(0, 0, 255));
     else if (box.id != 0)
         LOGE_INFO("Invalid box id:%d!", box.id);
-    if(is_kalman) kalman_run(image2show,box);
+    // if(is_kalman) kalman_run(image2show,box);
     imshow(windows_name, image2show);
 }
 
@@ -187,7 +187,7 @@ void showArmorBox(std::string windows_name, const cv::Mat &src, const ArmorBox &
     int h=image2show.size().height;
     line(image2show,Point2d(0,h/2),Point2d(w,h/2),Scalar(0,0,255),1);
     line(image2show,Point2d(w/2,0),Point2d(w/2,h),Scalar(0,0,255),1);
-    if(is_kalman) rectangle(image2show, kal_box, Scalar(0, 0, 255), 4);
+    // if(is_kalman) rectangle(image2show, kal_box, Scalar(0, 0, 255), 4);
 
     char dist[10];
     sprintf(dist, "%.1f", box.getBoxDistance());
@@ -204,49 +204,4 @@ void showArmorBox(std::string windows_name, const cv::Mat &src, const ArmorBox &
         LOGE_INFO("Invalid box id:%d!", box.id);
     if (save_video) saveVideos(image2show);//保存视频
     imshow(windows_name, image2show);
-}
-
-
-void kalman_run(cv::Mat& src,const ArmorBox& box){
-    static kal_test kalx;
-    static kal_test kaly;
-    
-    static cv::Mat srcxxx( 640, 1080, CV_8UC3, cv::Scalar(255,255,255) );
-    static cv::Mat srcyyy( 640, 1080, CV_8UC3, cv::Scalar(255,255,255) );
-    static cv::Scalar Color_blue(255,0,0);
-    static cv::Scalar Color_red(0,0,255);
-    static int iii=0;
-
-    cv::Point2f temp=box.getCenter();
-    double newx,newy;
-    // std::cout<<"now_time"<<std::endl;
-    // std::cout<<now_time<<std::endl<<std::endl;
-    newx=kalx.slove(temp.x,0);
-    newy=kaly.slove(temp.y,0);
-    int w=box.rect.width;
-    int h=box.rect.height;
-    cv::Rect2f r2f(newx-(w/2),newy-(h/2),w,h);
-    rectangle(src, r2f, cv::Scalar(0, 0, 255), 2);
-    circle(src, cv::Point2f(newx,newy) , 5, cv::Scalar(0, 0, 255),-1);  // -1 表示圆被填充，正数表示线条粗细
-
-    if(is_kalman_map)
-    {
-        if(iii==1080){
-            srcxxx=cv::Mat( 640, 1080, CV_8UC3, cv::Scalar(255,255,255) );
-            srcyyy=cv::Mat( 640, 1080, CV_8UC3, cv::Scalar(255,255,255) );
-            iii=0;
-        }
-        cv::Point2d pos(iii++,temp.x);
-        cv::circle(srcxxx,pos,1,Color_blue,1);
-        pos.y=newx;
-        cv::circle(srcxxx,pos,1,Color_red,1);
-
-        pos.y=temp.y;
-        cv::circle(srcyyy,pos,1,Color_blue,1);
-        pos.y=newy;
-        cv::circle(srcyyy,pos,1,Color_red,1);
-
-        cv::imshow("srcxxx",srcxxx);
-        cv::imshow("srcyyy",srcyyy);
-    }
 }
