@@ -8,7 +8,6 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DPATH=\"\\\"${PROJECT_SOURCE_DIR}\\\"\"
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D${CMAKE_SYSTEM_NAME}")
 SET(BIN_NAME "run")
 
-
 FIND_FILE(CONFIG_FOUND "config.h" "others/include/config")
 if (CONFIG_FOUND)
     MESSAGE("Found config.h")
@@ -41,6 +40,8 @@ INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/armor/include)
 INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/others/include)
 
 FILE(GLOB_RECURSE sourcefiles "others/src/*.cpp" "energy/src/*cpp" "armor/src/*.cpp")
+# 添加打开EKF的宏 在没有ceres库时 注释此行 也不使用EKF
+add_definitions(-Dadd_EKF)
 ADD_EXECUTABLE(${BIN_NAME} main.cpp ${sourcefiles})
 
 TARGET_LINK_LIBRARIES(${BIN_NAME} ${CMAKE_THREAD_LIBS_INIT})
