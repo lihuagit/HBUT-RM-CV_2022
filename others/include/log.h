@@ -130,25 +130,25 @@
     #define LOG_3(format, ...)      ((void)0)
 #endif
 #define LOG_4(format, ...)          ((void)0)
-#define LOG_(level, format, ...)    LOG_##level (format, ##__VA_ARGS__)
-#define LOG(level, format, ...)     LOG_(level, format"\n", ##__VA_ARGS__)
+#define LOG__(level, format, ...)    LOG_##level (format, ##__VA_ARGS__)
+#define LOG_(level, format, ...)     LOG__(level, format"\n", ##__VA_ARGS__)
 
-#define LOGA(format, ...)           LOG(LOG_NONE, format, ##__VA_ARGS__)
-#define LOGA_INFO(format, ...)      LOG(LOG_NONE, "<%s:%d>: " format, ##__VA_ARGS__)
-#define LOGE(format, ...)           LOG(LOG_ERROR,   STR_CTR(LOG_ERROR_COLOR,  "<ERROR>: "   format), ## __VA_ARGS__)
-#define LOGW(format, ...)           LOG(LOG_WARNING, STR_CTR(LOG_WARNING_COLOR,"<WARNING>: " format), ## __VA_ARGS__)
-#define LOGM(format, ...)           LOG(LOG_MSG,     STR_CTR(LOG_MSG_COLOR,    "<MSG>: "     format), ## __VA_ARGS__)
-#define LOGE_INFO(format, ...)      LOG(LOG_ERROR, \
+#define LOGA(format, ...)           LOG_(LOG_NONE, format, ##__VA_ARGS__)
+#define LOGA_INFO(format, ...)      LOG_(LOG_NONE, "<%s:%d>: " format, ##__VA_ARGS__)
+#define LOGE(format, ...)           LOG_(LOG_ERROR,   STR_CTR(LOG_ERROR_COLOR,  "<ERROR>: "   format), ## __VA_ARGS__)
+#define LOGW(format, ...)           LOG_(LOG_WARNING, STR_CTR(LOG_WARNING_COLOR,"<WARNING>: " format), ## __VA_ARGS__)
+#define LOGM(format, ...)           LOG_(LOG_MSG,     STR_CTR(LOG_MSG_COLOR,    "<MSG>: "     format), ## __VA_ARGS__)
+#define LOGE_INFO(format, ...)      LOG_(LOG_ERROR, \
                                             STR_CTR(LOG_ERROR_COLOR,  "<") \
                                             STR_CTR(LOG_LINK_COLOR,  "%s:%d") \
                                             STR_CTR(LOG_ERROR_COLOR, " ERROR>: "   format), \
                                             __FILE__, __LINE__, ##__VA_ARGS__)
-#define LOGW_INFO(format, ...)      LOG(LOG_WARNING, \
+#define LOGW_INFO(format, ...)      LOG_(LOG_WARNING, \
                                             STR_CTR(LOG_WARNING_COLOR,"<") \
                                             STR_CTR(LOG_LINK_COLOR,"%s:%d") \
                                             STR_CTR(LOG_WARNING_COLOR, " WARNING>: " format), \
                                             __FILE__, __LINE__, ##__VA_ARGS__)
-#define LOGM_INFO(format, ...)      LOG(LOG_MSG, \
+#define LOGM_INFO(format, ...)      LOG_(LOG_MSG, \
                                             STR_CTR(LOG_MSG_COLOR,    "<") \
                                             STR_CTR(LOG_LINK_COLOR,    "%s:%d") \
                                             STR_CTR(LOG_MSG_COLOR, " MSG>: "     format), \
