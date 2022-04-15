@@ -58,6 +58,7 @@
         "stdexcept": "cpp",
         "thread": "cpp",
         "cinttypes": "cpp",
-        "specialfunctions": "cpp"
+        "specialfunctions": "cpp",
+        "unordered_set": "cpp"
     }
 }
