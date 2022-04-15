@@ -17,24 +17,12 @@
 #include <options.h>
 
 constexpr int S=2;
-
-struct Pos{
-    int x,y;
-    Pos& operator=(Pos& a){
-        x=a.x;
-        y=a.y;
-        return *this;
-    }
-};
-
-
-class kal_test{
+class predictorKalman{
     using _Kalman = Kalman<1, S>;
     _Kalman kalman;
 public:
-    kal_test();
-    double last_x;
-    double slove(double x,double t);
+    predictorKalman();
+    double predictor(double x,double t);
     void Init(double x,double t);
 };
 

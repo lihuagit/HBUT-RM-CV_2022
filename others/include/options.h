@@ -24,8 +24,9 @@ extern bool show_energy;
 extern bool save_mark;
 extern bool show_info;
 extern bool run_by_frame;
-extern bool is_kalman;
-extern bool is_kalman_map;
+extern bool is_predictorKalman;
+extern bool is_predictorEKF;
+extern bool is_predictor;
 extern int shoot_delay_t;
 
 

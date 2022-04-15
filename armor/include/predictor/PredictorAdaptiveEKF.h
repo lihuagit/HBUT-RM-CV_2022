@@ -1,6 +1,7 @@
 //
 // Created by Harry-hhj on 2021/5/22.
 //
+#ifdef add_EKF
 
 #ifndef CVRM2021_PREDICTORADAPTIVEEKF_H
 #define CVRM2021_PREDICTORADAPTIVEEKF_H
@@ -105,7 +106,7 @@ public:
         std::cout << "Finish create a new EKF." << std::endl;
     }
 
-    std::vector<double> predict(double m_yaw,double m_pitch,double m_dist);
+    Eigen::Matrix<double, 5, 1> predict(double m_yaw,double m_pitch,double m_dist);
     bool Init(double m_yaw,double m_pitch,double m_dist);
 
     ~PredictorAdaptiveEKF() = default;
@@ -113,3 +114,4 @@ public:
 
 
 #endif //CVRM2021_PREDICTORADAPTIVEEKF_H
+#endif //add_EKF

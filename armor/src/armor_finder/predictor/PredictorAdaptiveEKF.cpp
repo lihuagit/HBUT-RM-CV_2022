@@ -1,6 +1,7 @@
 //
 // Created by Harry-hhj on 2021/5/22.
 //
+#ifdef add_EKF
 
 #include <predictor/PredictorAdaptiveEKF.h>
 
@@ -23,7 +24,7 @@ struct LastTimeHelper {
     double &r_time;
 };
 
-std::vector<double> PredictorAdaptiveEKF::predict(double m_yaw,double m_pitch,double m_dist){
+Eigen::Matrix<double, 5, 1> PredictorAdaptiveEKF::predict(double m_yaw,double m_pitch,double m_dist){
     double shoot_delay;
     double last_yaw = m_yaw;
     double last_pitch = m_pitch;
@@ -41,8 +42,7 @@ std::vector<double> PredictorAdaptiveEKF::predict(double m_yaw,double m_pitch,do
     predictfunc(Xe.data(), Xp.data());      // 使用匀速直线模型直接预测 Xp
     Eigen::Vector3d c_pw{Xe(0, 0), Xe(2, 0), Xe(4, 0)};
     Eigen::Vector3d p_pw{Xp(0, 0), Xp(2, 0), Xp(4, 0)};
-    std::vector<double> ans{Xp(0, 0), Xp(2, 0), Xp(4, 0)};
-    return ans;
+    return Xp;
 }
 
 bool PredictorAdaptiveEKF::Init(double m_yaw,double m_pitch,double m_dist){
@@ -53,3 +53,5 @@ bool PredictorAdaptiveEKF::Init(double m_yaw,double m_pitch,double m_dist){
     last_pitch = m_pitch;
     return true;
 }
+
+#endif  //add_EKF

@@ -14,7 +14,9 @@
 #include <armor_finder/classifier/classifier.h>
 #include <additions.h>
 #include <predictor/PredictorKalman.h>
+#include <predictor/PredictorAdaptiveEKF.h>
 #include <options.h>
+#include <Eigen/Eigen>
 
 #define BLOB_RED    ENEMY_RED
 #define BLOB_BLUE   ENEMY_BLUE
@@ -132,13 +134,29 @@ private:
 
     void antiTop();                                     // 反小陀螺
 
+    bool updateSendDateKalman();                        // kalman更新发送数据
+    bool updateSendDate();                              // 不使用预测器 更新发送数据
+    
+    #ifdef add_EKF
+    bool updateSendDateEKF();                           // EKF更新发送数据
+    #endif  // add_EKF
+    
     bool sendBoxPosition(uint16_t shoot);               // 和主控板通讯
 public:
     void run(cv::Mat &src);                             // 自瞄主函数
-    kal_test kal_x;
-    kal_test kal_y;
-    systime kal_t;
+    predictorKalman kal_yaw;
+    #ifdef add_EKF
+    PredictorAdaptiveEKF ekf;
+    #endif  // add_EKF
+    systime now_t;
     float word_yaw;
+    /**
+     * @brief 
+     * 待发送数据
+     */
+    float send_yaw;
+    float send_pitch;
+    float send_dist;
     cv::Rect2d kal_rect;
     void kal_run();
 };

@@ -1,7 +1,7 @@
 //
 // Created by xinyang on 2021/3/15.
 //
-
+#ifdef add_EKF
 #ifndef _ADAPTIVE_EKF_HPP_
 #define _ADAPTIVE_EKF_HPP_
 
@@ -78,3 +78,5 @@ public:
 
 
 #endif /* _ADAPTIVE_EKF_HPP_ */
+
+#endif // add_EKF

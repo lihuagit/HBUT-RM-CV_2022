@@ -6,7 +6,6 @@
 #include <config/setconfig.h>
 #include <log.h>
 #include <iostream>
-#include <predictor/PredictorKalman.h>
 #include <string.h>
 
 static bool sendTarget(Serial &serial, float x, int16_t y , double z/*, uint16_t shoot_delay*/) {
@@ -66,46 +65,70 @@ static bool sendTarget(Serial &serial, float x, int16_t y , double z/*, uint16_t
     return serial.WriteData(buff, sizeof(buff));
 }
 
+/**
+ * @brief 
+ * 发送sendDate
+ * 目前发送的的send_pitch为dy  send_dist不准确 后期修改
+ * @param shoot_delay 
+ * @return true 
+ * @return false 
+ */
 bool ArmorFinder::sendBoxPosition(uint16_t shoot_delay) {
-    static kal_test kal_dis;
-    static kal_test kal_yaw;
-    static double last_yaw=10;
-    if (target_box.rect == cv::Rect2d()) return false;
-    if (shoot_delay) {
-        LOGM(STR_CTR(WORD_BLUE, "next box %dms"), shoot_delay);
-    }
-    cv::Rect2d rect;
-    if(is_kalman) rect=kal_rect;
-    else rect = target_box.rect;
-    rect.y=target_box.rect.y;
-    int16_t dx = rect.x + rect.width / 2 - IMAGE_CENTER_X;
-    int16_t dy = -(rect.y + rect.height / 2 - IMAGE_CENTER_Y);
+    if(is_predictor){
+        #ifdef add_EKF
+        if(is_predictorEKF) updateSendDateEKF();
+        else
+        #endif
+        if(is_predictorKalman) updateSendDateKalman();
+        else updateSendDate();
+    }else updateSendDate();
+    return sendTarget(serial, send_yaw, (int16_t)send_pitch, (int16_t)send_dist/*, shoot_delay*/);
+}
+
+/**
+ * @brief 
+ * 基于kalman
+ * 对装甲板数据进行处理转化为yaw、pitch
+ * 并更新发送数据sendDate
+ * @return true 
+ * @return false 
+ */
+bool ArmorFinder::updateSendDateKalman(){
+    static predictorKalman kal_dis;
+    if (target_box.rect == cv::Rect2d())
+        return false;
+    
+    int16_t dx = target_box.rect.x + target_box.rect.width / 2 - IMAGE_CENTER_X;
+    int16_t dy = -(target_box.rect.y + target_box.rect.height / 2 - IMAGE_CENTER_Y);
     // double yaw = atan(1.0*dx / FOCUS_PIXAL) / 180 * PI;
     // double pitch = atan(1.0*dy / FOCUS_PIXAL) / 180 * PI;
-    float yaw = atan(1.0*dx / FOCUS_PIXAL);
-    double pitch = atan(1.0*dy / FOCUS_PIXAL);
-    double dist = DISTANCE_HEIGHT / rect.height*0.666666;
-    double now_t;
+    float c_yaw = atan(1.0*dx / FOCUS_PIXAL);
+    float c_pitch = atan(1.0*dy / FOCUS_PIXAL);
+    float c_dist = DISTANCE_HEIGHT / target_box.rect.height*0.666666;
+
     getsystime(now_t);
-    printf("dx:%d\n",dx);
-    printf("now_t:%lf\n",now_t);
-    // std::cout<<yaw<<" "<<pitch<<std::endl;
-    printf("d___yaw:%f\n",yaw);
-    // yaw+=word_yaw;
-    float res_yaw=yaw-word_yaw;
-    // if(fabs(res_yaw)>3.1415926) res_yaw=last_yaw;
-    //  if(fabs(yaw-last_yaw)<=0.007)
-        //  res_yaw=kal_yaw.slove(res_yaw,now_t);
-    //  else
-        //  kal_yaw.Init(yaw,now_t);
-     last_yaw=res_yaw;
-    // std::cout<<"word_yaw:"<<word_yaw<<std::endl;
-    printf("res_yaw:%f\n",res_yaw);
-    printf("word_yaw:%f\n",word_yaw);
-    // std::cout<<yaw<<" "<<pitch<<std::endl;
-    // yaw-=word_yaw;
-    dist=kal_dis.slove(dist,0);
+    float w_yaw=c_yaw-word_yaw;
+    if(fabs(send_yaw-w_yaw)<=5. / 180. * M_PI)
+        send_yaw=kal_yaw.predictor(w_yaw,now_t);
+    else{
+        kal_yaw.Init(w_yaw,now_t);
+        send_yaw=w_yaw;
+    }
     dy-=50;
+    send_dist=kal_dis.predictor(send_dist,0);
+    send_pitch=dy;
+    ////////////////////DEBUG//////////////////////
+    bool debug=false;
+    if(debug){
+        printf("dx:%d\n",dx);
+        printf("now_t:%lf\n",now_t);
+        printf("c_yaw:%f\n",c_yaw);
+        printf("word_yaw:%f\n",word_yaw);
+        printf("send_yaw:%f\n",send_yaw);
+    }
+    ////////////////////DEBUG/////////////////////
+    return true;
+
     // std::cout<<"dist:"<<dist<<std::endl;
     // dx+=20;
     // double dist_pre=dist;
@@ -133,9 +156,99 @@ bool ArmorFinder::sendBoxPosition(uint16_t shoot_delay) {
     // }
     // // flag=false;
     // cnt=0;
-    // getsystime(kal_t);
-    // kal_x.slove(dx,kal_t);
+    // getsystime(now_t);
+    // kal_yaw.slove(dx,now_t);
     // std::cout<<yaw<<" "<<pitch<<std::endl;
     // return sendTarget(serial, dx, dy, dist/*, shoot_delay*/);
-    return sendTarget(serial, res_yaw, dy, dist/*, shoot_delay*/);
+}
+
+
+#ifdef add_EKF
+
+/**
+ * @brief 
+ * 基于EKF
+ * 对装甲板数据进行处理转化为yaw、pitch
+ * 并更新数据sendDate
+ * @return true 
+ * @return false 
+ */
+bool ArmorFinder::updateSendDateEKF(){
+    // 对于距离滤波还是使用kalman
+    static predictorKalman kal_dis;
+    if (target_box.rect == cv::Rect2d())
+        return false;
+    
+    int16_t dx = target_box.rect.x + target_box.rect.width / 2 - IMAGE_CENTER_X;
+    int16_t dy = -(target_box.rect.y + target_box.rect.height / 2 - IMAGE_CENTER_Y);
+    // double yaw = atan(1.0*dx / FOCUS_PIXAL) / 180 * PI;
+    // double pitch = atan(1.0*dy / FOCUS_PIXAL) / 180 * PI;
+    float c_yaw = atan(1.0*dx / FOCUS_PIXAL);
+    float c_pitch = atan(1.0*dy / FOCUS_PIXAL);
+    float c_dist = DISTANCE_HEIGHT / target_box.rect.height*0.666666;
+
+    float w_yaw=c_yaw-word_yaw;
+    Eigen::Matrix<double, 5, 1> Xp;
+    if(fabs(send_yaw-w_yaw)<=5. / 180. * M_PI){
+        Xp=ekf.predict(w_yaw,c_pitch,c_dist);
+        send_yaw=Xp(0,0);
+    }
+    else{
+        ekf.Init(w_yaw,c_pitch,c_dist);
+        send_yaw=w_yaw;
+    }
+    dy-=50;
+    send_dist=kal_dis.predictor(send_dist,0);
+    send_pitch=dy;
+    ////////////////////DEBUG//////////////////////
+    bool debug=false;
+    if(debug){
+        printf("dx:%d\n",dx);
+        printf("c_yaw:%f\n",c_yaw);
+        printf("word_yaw:%f\n",word_yaw);
+        printf("send_yaw:%f\n",send_yaw);
+    }
+    ////////////////////DEBUG/////////////////////
+    return true;
+}
+#endif // add_EKF
+
+/**
+ * @brief 
+ * 不适用预测
+ * 对装甲板数据进行处理转化为yaw、pitch
+ * 并更新数据sendDate
+ * @return true 
+ * @return false 
+ */
+bool ArmorFinder::updateSendDate(){
+    // 对于距离滤波还是使用kalman
+    static predictorKalman kal_dis;
+    if (target_box.rect == cv::Rect2d())
+        return false;
+    
+    int16_t dx = target_box.rect.x + target_box.rect.width / 2 - IMAGE_CENTER_X;
+    int16_t dy = -(target_box.rect.y + target_box.rect.height / 2 - IMAGE_CENTER_Y);
+    // double yaw = atan(1.0*dx / FOCUS_PIXAL) / 180 * PI;
+    // double pitch = atan(1.0*dy / FOCUS_PIXAL) / 180 * PI;
+    float c_yaw = atan(1.0*dx / FOCUS_PIXAL);
+    float c_pitch = atan(1.0*dy / FOCUS_PIXAL);
+    float c_dist = DISTANCE_HEIGHT / target_box.rect.height*0.666666;
+
+    float w_yaw=c_yaw-word_yaw;
+    Eigen::Matrix<double, 5, 1> Xp;
+    dy-=50;
+    send_yaw=w_yaw;
+    send_dist=kal_dis.predictor(send_dist,0);
+    send_pitch=dy;
+    ////////////////////DEBUG//////////////////////
+    bool debug=false;
+    if(debug){
+        printf("dx:%d\n",dx);
+        printf("c_yaw:%f\n",c_yaw);
+        printf("word_yaw:%f\n",word_yaw);
+        printf("send_yaw:%f\n",send_yaw);
+    }
+    ////////////////////DEBUG/////////////////////
+    return true;
 }

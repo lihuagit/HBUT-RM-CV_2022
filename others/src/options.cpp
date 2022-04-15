@@ -20,17 +20,18 @@ bool show_energy = false;
 bool save_mark = false;
 bool show_info = false;
 bool run_by_frame = false;
-bool is_kalman=false;
-bool is_kalman_map=false;
+bool is_predictor=false;
+bool is_predictorKalman=false;
+bool is_predictorEKF=false;
 int shoot_delay_t=200;
 
 // 使用map保存所有选项及其描述和操作，加快查找速度。
 std::map<std::string, std::pair<std::string, void(*)(void)>> options = {
     {"--help",{
         "show the help information.", [](){
-            LOG(LOG_MSG, "<HELP>: " STR_CTR(WORD_BLUE, "All options below are for debug use."));
+            LOG_(LOG_MSG, "<HELP>: " STR_CTR(WORD_BLUE, "All options below are for debug use."));
             for(const auto &option : options){
-                LOG(LOG_MSG, "<HELP>: " STR_CTR(WORD_GREEN, "%s: %s"), option.first.data(), option.second.first.data());
+                LOG_(LOG_MSG, "<HELP>: " STR_CTR(WORD_GREEN, "%s: %s"), option.first.data(), option.second.first.data());
             }
         }
     }},

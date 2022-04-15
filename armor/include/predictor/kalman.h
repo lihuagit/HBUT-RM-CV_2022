@@ -48,12 +48,6 @@ public:
         last_t = t;
     }
 
-    void Init(int x,double t){
-        x_k1(0,0)=x;
-        x_k1(0,1)=0;
-        last_t=t;
-    }
-
     void reset(Matrix_x1d init, double t) {
         x_k1 = init;
         last_t = t;
