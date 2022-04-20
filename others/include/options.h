@@ -27,7 +27,8 @@ extern bool run_by_frame;
 extern bool is_predictorKalman;
 extern bool is_predictorEKF;
 extern bool is_predictor;
-extern int shoot_delay_t;
+extern double shoot_delay_t;
+extern double shoot_v;
 
 
 void processOptions(int argc, char **argv);

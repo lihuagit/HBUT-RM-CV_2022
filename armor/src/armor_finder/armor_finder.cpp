@@ -124,7 +124,7 @@ void ArmorFinder::kal_run(){
     cv::Point2f box_center=target_box.getCenter();
     double newx,newy;
     getsystime(now_t);
-    newx=kal_yaw.predictor(box_center.x,now_t);
+    // newx=kal_yaw.predictor(box_center.x,now_t);
     newy=box_center.y;
     int w=target_box.rect.width;
     int h=target_box.rect.height;

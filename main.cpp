@@ -50,15 +50,17 @@ ArmorFinder armor_finder(mcu_data.enemy_color, serial, PROJECT_DIR"/tools/para/"
 Energy energy(serial, mcu_data.enemy_color);
 
 int main(int argc, char *argv[]) {
-
+    cv::Point2f tmp[4];
+    
 ///////////////////////调参区begin///////////////////
     show_armor_box=true;
      show_origin=true;
     // show_armor_box=true;
     wait_uart=true;
     // save_video=true;
-    shoot_delay_t=350;   // 射击延迟 for 3m
-    // shoot_delay_t=150;   // 射击延迟    for 1m
+
+    shoot_delay_t=70;  // 射击延迟
+    shoot_v=15;         // 单速
 
     // for 大风车
     //show_process=false;
@@ -67,8 +69,8 @@ int main(int argc, char *argv[]) {
     //show_energy=true;
     
     // 预测器
-    is_predictor=false;
-    is_predictorKalman=false;
+    is_predictor=true;
+    is_predictorKalman=true;
     is_predictorEKF=false;
 ///////////////////////调参区end///////////////////
 

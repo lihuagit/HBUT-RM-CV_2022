@@ -17,10 +17,12 @@ predictorKalman::predictorKalman(){
     kalman = _Kalman(A, H, R, Q, init, 0);
 }
 
-double predictorKalman::predictor(double x,double t){
+std::vector<double> predictorKalman::predictor(double x,double t){
     _Kalman::Matrix_z1d Zk{x};
     _Kalman::Matrix_x1d ansXk;
     ansXk=kalman.update(Zk,t);
-    double ans=ansXk(0,0)+shoot_delay_t*ansXk(1,0);
+    std::vector<double> ans(5);
+    ans.emplace_back(ansXk(0,0));
+    ans.emplace_back(ansXk(1,0));
     return ans;
 }

@@ -22,7 +22,7 @@ class predictorKalman{
     _Kalman kalman;
 public:
     predictorKalman();
-    double predictor(double x,double t);
+    std::vector<double> predictor(double x,double t);
     void Init(double x,double t);
 };
 

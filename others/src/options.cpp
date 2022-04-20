@@ -23,7 +23,8 @@ bool run_by_frame = false;
 bool is_predictor=false;
 bool is_predictorKalman=false;
 bool is_predictorEKF=false;
-int shoot_delay_t=200;
+double shoot_delay_t=200;
+double shoot_v=15;
 
 // 使用map保存所有选项及其描述和操作，加快查找速度。
 std::map<std::string, std::pair<std::string, void(*)(void)>> options = {
