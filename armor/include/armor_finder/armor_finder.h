@@ -6,6 +6,7 @@
 #define _ARMOR_FINDER_H_
 
 #include <map>
+#include <queue>
 #include <systime.h>
 #include <constants.h>
 #include <opencv2/core.hpp>

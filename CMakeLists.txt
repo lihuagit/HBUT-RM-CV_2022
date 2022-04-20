@@ -41,7 +41,7 @@ INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/others/include)
 
 FILE(GLOB_RECURSE sourcefiles "others/src/*.cpp" "energy/src/*cpp" "armor/src/*.cpp")
 # 添加打开EKF的宏 在没有ceres库时 注释此行 也不使用EKF
-add_definitions(-Dadd_EKF)
+# add_definitions(-Dadd_EKF)
 ADD_EXECUTABLE(${BIN_NAME} main.cpp ${sourcefiles})
 
 TARGET_LINK_LIBRARIES(${BIN_NAME} ${CMAKE_THREAD_LIBS_INIT})
