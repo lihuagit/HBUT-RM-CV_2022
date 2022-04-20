@@ -74,8 +74,6 @@ bool ArmorFinder::updateSendDateKalman(){
     
     int16_t dx = target_box.rect.x + target_box.rect.width / 2 - IMAGE_CENTER_X;
     int16_t dy = -(target_box.rect.y + target_box.rect.height / 2 - IMAGE_CENTER_Y);
-    float c_yaw = atan(1.0*dx / FOCUS_PIXAL);
-    float c_pitch = atan(1.0*dy / FOCUS_PIXAL);                         // 单位 弧度 ： 目前未使用
     float c_dist = DISTANCE_HEIGHT / target_box.rect.height*0.666666;   // 单位 cm
 
     // 对距离进行滤波
@@ -90,6 +88,11 @@ bool ArmorFinder::updateSendDateKalman(){
     LinearSmooth72(Dis, 7);
     c_dist=Dis.front();
     Dis.pop();
+    
+    // 计算yaw，pitch
+    double p_dist=c_dist*3; // 实际距离 转 像素距离
+    float c_yaw = atan(1.0*dx / p_dist);
+    float c_pitch = atan(1.0*dy / p_dist);                         // 单位 弧度 ： 目前未使用
 
     // 对yaw预测
     getsystime(now_t);
