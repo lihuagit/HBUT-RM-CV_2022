@@ -103,6 +103,54 @@ bool ArmorFinder::matchArmorBoxes(const cv::Mat &src, const LightBlobs &light_bl
                     pair_blobs,
                     enemy_color
             );
+            ArmorBox &box=armor_boxes.back();
+
+            // 更精确的框选装甲板
+            auto blob=light_blobs[i];
+            cv::Point2f cen=blob.rect.center;
+            std::vector<cv::Point2f> ans1;
+            double ang;
+            if(blob.rect.size.width>blob.rect.size.height){
+                ang=blob.rect.angle;
+            }
+            else ang=-blob.rect.angle;
+            double heigh=max(blob.rect.size.width,blob.rect.size.height);
+            // heigh=max( heigh,(double)max(blob.rect.size.width,blob.rect.size.height) );
+            double h=sin((ang)*M_PI/180)*heigh;
+            h/=2;
+            double w=cos((ang)*M_PI/180)*heigh;
+            w/=2;
+            if(h<w) swap(w,h);
+            ans1.push_back({cen.x+w,cen.y+h});
+            ans1.push_back({cen.x-w,cen.y-h});
+            sort(ans1.begin(),ans1.end(),[](cv::Point2f a,cv::Point2f b){ return a.y<b.y; });
+            
+            blob=light_blobs[j];
+            cen=blob.rect.center;
+            std::vector<cv::Point2f> ans2;
+            ang;
+            if(blob.rect.size.width>blob.rect.size.height){
+                ang=blob.rect.angle;
+            }
+            else ang=-blob.rect.angle;
+            heigh=max(blob.rect.size.width,blob.rect.size.height);
+            h=sin((ang)*M_PI/180)*heigh;
+            h/=2;
+            w=cos((ang)*M_PI/180)*heigh;
+            w/=2;
+            if(h<w) swap(w,h);
+            ans2.push_back({cen.x+w,cen.y+h});
+            ans2.push_back({cen.x-w,cen.y-h});
+            sort(ans2.begin(),ans2.end(),[](cv::Point2f a,cv::Point2f b){ return a.y<b.y; });
+
+            if(ans1[0].x>ans2[0].x){
+                swap(ans1[0],ans2[0]);
+                swap(ans1[1],ans2[1]);
+            }
+            box.pts[0]=ans1[0];
+            box.pts[1]=ans1[1];
+            box.pts[2]=ans2[1];
+            box.pts[3]=ans2[0];
         }
     }
     return !armor_boxes.empty();

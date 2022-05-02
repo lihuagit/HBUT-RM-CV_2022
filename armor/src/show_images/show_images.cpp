@@ -105,6 +105,15 @@ void showArmorBox(std::string windows_name, const cv::Mat &src, const ArmorBox &
     line(image2show,Point2d(0,h/2),Point2d(w,h/2),Scalar(0,0,255),1);
     line(image2show,Point2d(w/2,0),Point2d(w/2,h),Scalar(0,0,255),1);
 
+    
+    // 画线
+    for (int i = 0; i < 4; i++)
+        cv::line(image2show, box.pts[i], box.pts[(i + 1) % 4], Scalar(0,0,255), 2);
+
+    // 画点
+    for(int i=0;i<4;i++)
+        cv::circle(image2show,box.pts[i],i*3,cv::Scalar(255,255,255),1);
+
     char dist[10];
     sprintf(dist, "%.1f", box.getBoxDistance());
     if (box.id == -1)

@@ -56,7 +56,7 @@ int main(int argc, char *argv[]) {
     show_armor_box=true;
      show_origin=true;
     // show_armor_box=true;
-    wait_uart=true;
+    // wait_uart=true;
     // save_video=true;
 
     shoot_delay_t=70;  // 射击延迟
@@ -82,7 +82,7 @@ int main(int argc, char *argv[]) {
     if (!run_with_camera) {
         cout << "Input 1 for camera, 0 for video files" << endl;
         // cin >> from_camera;
-        from_camera=true;
+        from_camera=false;
     }
     bool flag=true;
     while (true) {
@@ -92,7 +92,8 @@ int main(int argc, char *argv[]) {
         } else {
             // video = new VideoWrapper(PROJECT_DIR"/video/1.mp4");
             // video = new VideoWrapper(PROJECT_DIR"/video/8-11东大3No.4.mp4");
-            video = new VideoWrapper(PROJECT_DIR"/video/8-11东大3No.4-装甲板-1.mp4");
+            // video = new VideoWrapper(PROJECT_DIR"/video/8-11东大3No.4-装甲板-1.mp4");
+            video = new VideoWrapper(PROJECT_DIR"/video/red_3.mp4");
         }
         if (video->init()) {
             LOGM("video_source initialization successfully.");

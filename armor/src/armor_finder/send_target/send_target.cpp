@@ -56,7 +56,7 @@ bool ArmorFinder::sendBoxPosition(uint16_t shoot_delay) {
         if(is_predictorKalman) updateSendDateKalman();
         else updateSendDate();
     }else updateSendDate();
-    return sendTarget(serial, send_yaw, (int16_t)send_pitch, (int16_t)send_dist/*, shoot_delay*/);
+    return sendTarget(serial, sendData.send_yaw, (int16_t)sendData.send_pitch, (int16_t)sendData.send_dist/*, shoot_delay*/);
 }
 
 /**
@@ -68,9 +68,24 @@ bool ArmorFinder::sendBoxPosition(uint16_t shoot_delay) {
  * @return false 
  */
 bool ArmorFinder::updateSendDateKalman(){
+
+    getsystime(now_t);
+    src_date data;
+    send_data s_data;
+
+    data.id=target_box.id;
+    data.now_t=now_t;
+    data.rec_yaw=word_yaw;
+    for(int i=0;i<4;i++)
+        data.p[i]=target_box.pts[i];
+    kal_yaw.predict(data,s_data,im2show);
+    cv::imshow("kalman",im2show);
+    return true;
+
+
     static predictorKalman kal_dis;
     if (target_box.rect == cv::Rect2d())
-        return false;
+    return false;
     
     int16_t dx = target_box.rect.x + target_box.rect.width / 2 - IMAGE_CENTER_X;
     int16_t dy = -(target_box.rect.y + target_box.rect.height / 2 - IMAGE_CENTER_Y);
@@ -101,7 +116,7 @@ bool ArmorFinder::updateSendDateKalman(){
 
     // yaw轴变化幅度大于10度认为发生目标切换 重置滤波器
     // 滤波返回值kal_res{ (yaw)位置 ， (v)速度 }
-    if(fabs(send_yaw-w_yaw)<=10. / 180. * M_PI)
+    if(fabs(sendData.send_yaw-w_yaw)<=10. / 180. * M_PI)
         kal_res=kal_yaw.predictor(w_yaw,now_t);
     else{
         kal_yaw.Init(w_yaw,now_t);
@@ -112,10 +127,10 @@ bool ArmorFinder::updateSendDateKalman(){
     // 预测时间=发射延迟+飞行时间（单位:s）
     double predict_t;
     predict_t=( (c_dist/100)/shoot_v ) + shoot_delay_t;
-    send_yaw=kal_res[0]+kal_res[1]*predict_t;
+    sendData.send_yaw=kal_res[0]+kal_res[1]*predict_t;
     // send_dist=kal_dis.predictor(send_dist,0);    // 使用kalman对距离滤波 ： 已弃用
-    send_dist=c_dist;
-    send_pitch=dy;
+    sendData.send_dist=c_dist;
+    sendData.send_pitch=dy;
     ////////////////////DEBUG//////////////////////
     bool debug=false;
     if(debug){
@@ -123,7 +138,7 @@ bool ArmorFinder::updateSendDateKalman(){
         printf("now_t:%lf\n",now_t);
         printf("c_yaw:%f\n",c_yaw);
         printf("word_yaw:%f\n",word_yaw);
-        printf("send_yaw:%f\n",send_yaw);
+        printf("send_yaw:%f\n",sendData.send_yaw);
     }
     ////////////////////DEBUG/////////////////////
     return true;
@@ -237,16 +252,16 @@ bool ArmorFinder::updateSendDate(){
     float w_yaw=c_yaw-word_yaw;
     Eigen::Matrix<double, 5, 1> Xp;
     dy-=50;
-    send_yaw=w_yaw;
+    sendData.send_yaw=w_yaw;
     // send_dist=kal_dis.predictor(send_dist,0);
-    send_pitch=dy;
+    sendData.send_pitch=dy;
     ////////////////////DEBUG//////////////////////
     bool debug=false;
     if(debug){
         printf("dx:%d\n",dx);
         printf("c_yaw:%f\n",c_yaw);
         printf("word_yaw:%f\n",word_yaw);
-        printf("send_yaw:%f\n",send_yaw);
+        printf("send_yaw:%f\n",sendData.send_yaw);
     }
     ////////////////////DEBUG/////////////////////
     return true;

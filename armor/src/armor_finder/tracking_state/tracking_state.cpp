@@ -41,6 +41,10 @@ bool ArmorFinder::stateTrackingTarget(cv::Mat &src) {
             blob.rect.center.x += bigger_rect.x;
             blob.rect.center.y += bigger_rect.y;
         }
+        for(int i=0;i<4;i++){
+            target_box.pts[i].x+=bigger_rect.x;
+            target_box.pts[i].y+=bigger_rect.y;
+        }
         tracker = TrackerToUse::create();
         tracker->init(src, target_box.rect);
     }else{    // 如果没有成功搜索目标，则使用判断是否跟丢。

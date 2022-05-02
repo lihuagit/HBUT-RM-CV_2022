@@ -57,6 +57,7 @@ ArmorFinder::ArmorFinder(uint8_t &color, Serial &u, const string &paras_folder, 
 }
 
 void ArmorFinder::run(cv::Mat &src) {
+    im2show=src.clone();
     getsystime(frame_time); //　获取当前帧时间(不是足够精确)
 //    stateSearchingTarget(src);                    // for debug
 //    goto end;
@@ -111,7 +112,7 @@ end:
             // showArmorBox("box", src, target_box,kal_rect);
         // else showArmorBox("box", src, target_box);
         showArmorBox("box", src, target_box);
-        cv::waitKey(1);
+        cv::waitKey(0);
     }
 }
 

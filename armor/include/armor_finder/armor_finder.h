@@ -18,6 +18,7 @@
 #include <predictor/PredictorAdaptiveEKF.h>
 #include <options.h>
 #include <Eigen/Eigen>
+#include <armor_finder/send_data.h>
 
 #define BLOB_RED    ENEMY_RED
 #define BLOB_BLUE   ENEMY_BLUE
@@ -78,6 +79,7 @@ public:
     } BoxOrientation;
 
     cv::Rect2d rect;
+    cv::Point2f pts[4];
     LightBlobs light_blobs;
     uint8_t box_color;
     int id;
@@ -155,12 +157,11 @@ public:
     float word_yaw;                                     //接收电控的云台位姿，用来计算世界坐标
     /**
      * @brief 
-     * 待发送数据
+     * 待发送数据包
      */
-    float send_yaw;
-    float send_pitch;
-    float send_dist;
+    send_data sendData;
     cv::Rect2d kal_rect;
+    cv::Mat im2show;
     void kal_run();
 };
 
