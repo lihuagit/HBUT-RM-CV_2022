@@ -112,7 +112,7 @@ end:
             // showArmorBox("box", src, target_box,kal_rect);
         // else showArmorBox("box", src, target_box);
         showArmorBox("box", src, target_box);
-        cv::waitKey(0);
+        cv::waitKey(1);
     }
 }
 

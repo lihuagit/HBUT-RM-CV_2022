@@ -8,7 +8,7 @@
 #include <iostream>
 #include <string.h>
 
-static bool sendTarget(Serial &serial, float x, int16_t y , double z/*, uint16_t shoot_delay*/) {
+static bool sendTarget(Serial &serial, float x, float y /*, double z, uint16_t shoot_delay*/) {
     static short x_tmp, y_tmp, z_tmp;
     uint8_t buff[10];
 
@@ -32,9 +32,9 @@ static bool sendTarget(Serial &serial, float x, int16_t y , double z/*, uint16_t
     // printf("x:%f\n",x);
     float test = x;
     memcpy(buff + 1, &test, 4);
+    test = y;
+    memcpy(buff + 5, &test, 4);
     // printf("data: %f\n", *(float*)(buff + 1));
-    *((uint16_t*)(buff + 5)) = y;
-    *((uint16_t*)(buff + 7)) = z;
     buff[9] = 'e';
     return serial.WriteData(buff, sizeof(buff));
 }
@@ -56,7 +56,7 @@ bool ArmorFinder::sendBoxPosition(uint16_t shoot_delay) {
         if(is_predictorKalman) updateSendDateKalman();
         else updateSendDate();
     }else updateSendDate();
-    return sendTarget(serial, sendData.send_yaw, (int16_t)sendData.send_pitch, (int16_t)sendData.send_dist/*, shoot_delay*/);
+    return sendTarget(serial, sendData.send_yaw, sendData.send_pitch/*, (int16_t)sendData.send_dist, shoot_delay*/);
 }
 
 /**
@@ -78,6 +78,14 @@ bool ArmorFinder::updateSendDateKalman(){
     data.rec_yaw=word_yaw;
     for(int i=0;i<4;i++)
         data.p[i]=target_box.pts[i];
+    double w=im2show.size().width;
+    double h=im2show.size().height;
+    w/=2; h/=2;
+    for(int i=0;i<4;i++){
+        data.p[i].x-=w;
+        data.p[i].y-=h;
+        data.p[i].y*=-1;
+    }
     kal_yaw.predict(data,s_data,im2show);
     cv::imshow("kalman",im2show);
     return true;

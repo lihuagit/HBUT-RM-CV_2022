@@ -51,6 +51,11 @@ class predictorKalman{
     inline void re_project_point(cv::Mat &image, const Eigen::Vector3d &pw, const cv::Scalar &color) {
         // Eigen::Vector3d pc = pw_to_pc(pw, R_IW);
         Eigen::Vector3d pu = pc_to_pu(pw);
+        double ww=320;
+        double hh=240;
+        pu(0, 0)+=ww;
+        pu(1, 0)*=-1;
+        pu(1, 0)+=hh;
         cv::circle(image, {int(pu(0, 0)), int(pu(1, 0))}, 3, color, 2);
     }
 
