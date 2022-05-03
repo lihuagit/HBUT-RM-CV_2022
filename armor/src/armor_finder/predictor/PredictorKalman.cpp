@@ -142,12 +142,12 @@ bool predictorKalman::predict(src_date &data, send_data &send, cv::Mat &im2show)
 
 	double s_tan_pitch = s_y_pos / sqrt(s_x_pos*s_x_pos + s_z_pos * s_z_pos);
 	double s_tan_yaw = s_x_pos / s_z_pos;
-	double s_mc_pitch = atan(tan_pitch);
-    double s_mc_yaw = atan(tan_yaw);
+	double s_mc_pitch = atan(s_tan_pitch);
+    double s_mc_yaw = atan(s_tan_yaw);
 
     
-    std::cout << "s_mc_yaw s_mc_pitch" << std::endl;
-    std::cout << s_mc_yaw <<" : "<< s_mc_pitch << std::endl;
+    // std::cout << "s_mc_yaw s_mc_pitch" << std::endl;
+    // std::cout << s_mc_yaw <<" : "<< s_mc_pitch << std::endl;
 
     send.send_yaw=s_mc_yaw-rec_yaw;
     send.send_pitch=s_mc_pitch;
