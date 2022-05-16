@@ -1,6 +1,11 @@
-//
-// Created by xinyang on 19-7-11.
-//
+/**
+ * @file send_target.cpp
+ * @brief 串口发送数据文件
+ * @author lihuagit (3190995951@qq.com)
+ * @version 1.0
+ * @date 2022-05-16
+ * 
+ */
 
 #include <armor_finder/armor_finder.h>
 #include <config/setconfig.h>

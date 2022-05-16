@@ -1,7 +1,11 @@
-//
-// Created by sjturm on 19-5-17.
-//
-
+/**
+ * @file show_images.cpp
+ * @brief 一些杂项，主要是接收电控的指令结构体以及接收函数
+ * @author lihuagit (3190995951@qq.com)
+ * @version 1.0
+ * @date 2022-05-16
+ * 
+ */
 #ifndef _ADDITIONS_H_
 #define _ADDITIONS_H_
 

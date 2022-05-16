@@ -1,7 +1,13 @@
-//
-// Created by xinyang on 19-3-27.
-//
-
+/**
+ * @file armor_finder.h
+ * @brief 自瞄类
+ *        定义灯条类、装甲板类、自瞄类
+ *        自瞄{ 装甲板{ 灯条 } } 
+ * @author lihuagit (3190995951@qq.com)
+ * @version 1.0
+ * @date 2022-05-16
+ * 
+ */
 #ifndef _ARMOR_FINDER_H_
 #define _ARMOR_FINDER_H_
 

@@ -41,8 +41,18 @@ std::vector<double> predictorKalman::predictor(double x,double t){
     return ans;
 }
 
+/**
+ * @brief kalman预测
+ * @param data 传入数据
+ * @param send 处理完毕的待发送数据
+ * @param im2show 用于显示kalman结果
+ * @return true 
+ * @return false 
+ */
 bool predictorKalman::predict(src_date &data, send_data &send, cv::Mat &im2show){
     auto &[detection, rec_yaw, tag_id, t] = data;
+
+    /// 计算角度
     Eigen::Vector3d m_pc = pnp_get_pc(detection, tag_id);             // point camera: 目标在相机坐标系下的坐标
     double GUN_CAM_DISTANCE_Y = 0;
 	m_pc(1, 0) -= GUN_CAM_DISTANCE_Y;
@@ -63,19 +73,23 @@ bool predictorKalman::predict(src_date &data, send_data &send, cv::Mat &im2show)
     // std::cout << "tan(mc_yaw)" << std::endl;
     // std::cout << tan(mc_yaw) << std::endl;
     // rec_yaw=0.5;
+
+    // 转化为世界坐标，逻辑上应该是叠加，但是奇奇怪怪的问题，写成了这样
     double m_yaw=mc_yaw-rec_yaw;
     // double m_yaw=mc_yaw;
     // std::cout << "m_yaw" << std::endl;
     // std::cout << m_yaw << std::endl;
 
     static double last_yaw = 0, last_speed = 0;
+    // 角度大于5度，则认为目标发送切换，重置kalman滤波器
     if(std::fabs(last_yaw - m_yaw) > 5. / 180. * M_PI){
         kalman.reset(m_yaw, t);
         last_yaw = m_yaw;
-        std::cout << "reset" << std::endl;
+        std::cout << "kalman reset" << std::endl;
         return false;
     }
 
+    /// update kalman
     last_yaw = m_yaw;///
     Eigen::Matrix<double, 1, 1> z_k{m_yaw};
     _Kalman::Matrix_x1d state = kalman.update(z_k, t);                        // 更新卡尔曼滤波
@@ -92,7 +106,10 @@ bool predictorKalman::predict(src_date &data, send_data &send, cv::Mat &im2show)
     predict_time*=1000;
     // std::cout << " predict_time" << std::endl;
     // std::cout << predict_time << std::endl;
+
+    /// 对yaw预测
     double p_yaw = c_yaw + atan2(predict_time * c_speed, m_pc.norm());     // predict yaw: yaw的预测值，直线位移转为角度，单位弧度
+    // 绝对角度转相对相对角度
     p_yaw+=rec_yaw;
 
     double length = sqrt(m_pc(0, 0) * m_pc(0, 0) + m_pc(1, 0) * m_pc(1, 0));
@@ -100,6 +117,7 @@ bool predictorKalman::predict(src_date &data, send_data &send, cv::Mat &im2show)
     // Eigen::Vector3d p_pw{length * cos(p_yaw), length * sin(p_yaw), m_pc(2, 0)};
     Eigen::Vector3d p_pw{tan(p_yaw)*z_pos, m_pc(1, 0), m_pc(2, 0)};
     
+    /// 计算抬枪补偿
     distance = p_pw.norm();                          // 目标距离（单位:m）
     double distance_xy = p_pw.topRows<2>().norm();
     double p_pitch = std::atan2(p_pw(2, 0), distance_xy);
@@ -125,6 +143,7 @@ bool predictorKalman::predict(src_date &data, send_data &send, cv::Mat &im2show)
 	// Eigen::Vector3d s_pw{p_pw(0, 0), p_pw(1, 0), p_pw(2, 0) + height}; // 抬枪后预测点
 	Eigen::Vector3d s_pw{p_pw(0, 0), p_pw(1, 0) + height, p_pw(2, 0)}; // 抬枪后预测点
     
+    /// 在im2show中画出 识别点、预测点、抬枪补偿后的点
     double w=320,h=240;
     for(int i=0;i<4;i++){
         detection[i].x+=w;
@@ -135,8 +154,11 @@ bool predictorKalman::predict(src_date &data, send_data &send, cv::Mat &im2show)
         cv::circle(im2show, detection[i], 3, {255, 0, 0});
     cv::circle(im2show, {im2show.cols / 2, im2show.rows / 2}, 3, {0, 255 ,0});
 	// re_project_point(im2show, c_pw, {0, 255, 0});
+    // 预测点 
 	re_project_point(im2show, p_pw, {255, 0, 0});
+    // 预测+抬枪补偿点
 	re_project_point(im2show, s_pw, {0, 0, 255});
+    // 识别点
 	re_project_point(im2show, m_pc, {0, 255, 0});
 
 	double s_x_pos = s_pw(0, 0);
@@ -155,13 +177,20 @@ bool predictorKalman::predict(src_date &data, send_data &send, cv::Mat &im2show)
     
     // std::cout << "s_mc_yaw s_mc_pitch" << std::endl;
     // std::cout << s_mc_yaw <<" : "<< s_mc_pitch << std::endl;
-
+    
+    /// update发送数据，目前与电控的协议是yaw绝对坐标， pitch相对坐标
     send.send_yaw=s_mc_yaw-rec_yaw;
     send.send_pitch=s_mc_pitch;
     
     return true;
 }
 
+/**
+ * @brief 使用opencv的solvePnP对装甲板位置进行pnp结算，相机的标定极其重要
+ * @param p 
+ * @param armor_number 
+ * @return Eigen::Vector3d 
+ */
 Eigen::Vector3d predictorKalman::pnp_get_pc(const cv::Point2f p[4], int armor_number) {
     static const std::vector<cv::Point3d> pw_small = {  // 单位：m
             {-0.066, 0.027,  0.},

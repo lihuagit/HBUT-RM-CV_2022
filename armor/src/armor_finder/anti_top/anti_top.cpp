@@ -1,6 +1,11 @@
-//
-// Created by xinyang on 19-7-15.
-//
+/**
+ * @file anti_top.cpp
+ * @brief 上交2019年的反陀螺文件，效果不是很好，没有使用。
+ * @author lihuagit (3190995951@qq.com)
+ * @version 1.0
+ * @date 2022-05-16
+ * 
+ */
 
 #include <armor_finder/armor_finder.h>
 #include <additions.h>

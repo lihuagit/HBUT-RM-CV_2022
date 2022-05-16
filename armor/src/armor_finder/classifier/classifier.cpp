@@ -1,7 +1,11 @@
-//
-// Created by xinyang on 19-4-19.
-//
-// 对本文件的大致描述请看classifier.h
+/**
+ * @file classifier.cpp
+ * @brief 具体看classifier.h文件
+ * @author lihuagit (3190995951@qq.com)
+ * @version 1.0
+ * @date 2022-05-16
+ * 
+ */
 
 //#define LOG_LEVEL LOG_NONE
 #include <armor_finder/classifier/classifier.h>

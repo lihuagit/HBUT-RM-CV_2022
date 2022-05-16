@@ -84,7 +84,7 @@ bool CameraWrapper::init() {
     }
     LOGM("successfully loaded %s!", filepath);
 #elif defined(Linux)
-    CameraReadParameterFromFile(h_camera, PROJECT_DIR"/others/armor_lihua_4.Config");
+    CameraReadParameterFromFile(h_camera, PROJECT_DIR"/others/armor_lihua_5.Config");
     // CameraSetGain(h_camera,152,85,151);
     // CameraLoadParameter(h_camera, PARAMETER_TEAM_A);
     // CameraSetAeState(h_camera, false);
@@ -99,6 +99,7 @@ bool CameraWrapper::init() {
     CameraGetExposureTime(h_camera, &t);
     CameraGetAnalogGain(h_camera, &g);
     LOGM("Exposure time: %lfms, gain:%d", t / 1000.0, g);
+    CameraReadParameterFromFile(h_camera, PROJECT_DIR"/others/armor_lihua_5.Config");
     /*让SDK进入工作模式，开始接收来自相机发送的图像
     数据。如果当前相机是触发模式，则需要接收到
     触发帧以后才会更新图像。    */
@@ -139,15 +140,14 @@ bool CameraWrapper::read(cv::Mat &src) {
 
 bool CameraWrapper::readRaw(cv::Mat &src) {
     if (CameraGetImageBuffer(h_camera, &frame_info, &pby_buffer, 500) == CAMERA_STATUS_SUCCESS) {
-        if (iplImage) {
-            cvReleaseImageHeader(&iplImage);
-        }
-
-        iplImage = cvCreateImageHeader(cvSize(frame_info.iWidth, frame_info.iHeight), IPL_DEPTH_8U, 1);
-
-        cvSetData(iplImage, pby_buffer, frame_info.iWidth);  //此处只是设置指针，无图像块数据拷贝，不需担心转换效率
-
-        src = cv::cvarrToMat(iplImage).clone();
+        
+        CameraImageProcess(h_camera, pby_buffer, rgb_buffer,&frame_info);
+        
+        src = cv::Mat(
+                cv::Size(frame_info.iWidth,frame_info.iHeight),
+                frame_info.uiMediaType == CAMERA_MEDIA_TYPE_MONO8 ? CV_8UC1 : CV_8UC3,
+                rgb_buffer
+                );
 
         //在成功调用CameraGetImageBuffer后，必须调用CameraReleaseImageBuffer来释放获得的buffer。
         //否则再次调用CameraGetImageBuffer时，程序将被挂起一直阻塞，直到其他线程中调用CameraReleaseImageBuffer来释放了buffer

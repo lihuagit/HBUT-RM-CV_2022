@@ -1,3 +1,11 @@
+/**
+ * @file send_data.h
+ * @brief 定义发送数据、待处理数据结构体，方便与kalman函数交互
+ * @author lihuagit (3190995951@qq.com)
+ * @version 1.0
+ * @date 2022-05-16
+ * 
+ */
 #ifndef _SEND_DATA_H_
 #define _SEND_DATA_H_
 

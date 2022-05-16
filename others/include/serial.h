@@ -1,3 +1,11 @@
+/**
+ * @file serial.h
+ * @brief 串口类
+ * @author lihuagit (3190995951@qq.com)
+ * @version 1.0
+ * @date 2022-05-16
+ * 
+ */
 #ifndef _SERIAL_H_
 #define _SERIAL_H_
 

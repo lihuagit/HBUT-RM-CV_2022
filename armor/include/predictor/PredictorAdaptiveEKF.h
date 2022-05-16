@@ -1,6 +1,11 @@
-//
-// Created by Harry-hhj on 2021/5/22.
-//
+/**
+ * @file PredictorAdaptiveEKF.h
+ * @brief 相仿上交2021年代码写的EKF 目前还没优化好，没有应用
+ * @author lihuagit (3190995951@qq.com)
+ * @version 1.0
+ * @date 2022-01-17
+ * 
+ */
 #ifdef add_EKF
 
 #ifndef CVRM2021_PREDICTORADAPTIVEEKF_H

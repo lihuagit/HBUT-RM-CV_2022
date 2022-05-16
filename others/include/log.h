@@ -1,6 +1,11 @@
-//
-// Created by xinyang on 19-2-19.
-//
+/**
+ * @file log.h
+ * @brief 
+ * @author lihuagit (3190995951@qq.com)
+ * @version 1.0
+ * @date 2022-05-16
+ * 
+ */
 // 该文件提供一个更加方便的调试信息输出方式
 // 所有输出信息分为三个LEVEL:MSG,WARNING,ERROR
 // 可使用宏LOG_LEVEL定义当前文件使用的输出LEVEL

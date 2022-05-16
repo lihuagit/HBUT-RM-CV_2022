@@ -1,9 +1,11 @@
-//
-// Created by xinyang on 19-4-19.
-//
-// 为了一时方便，使用循环和Eigen自行编写的CNN前向传播类。
-// 没有显著的性能损失。
-// 但类定义了网络结构，同时实现的操作较少，可扩展性较差
+/**
+ * @file classifier.h
+ * @brief 使用循环和Eigen自行编写的CNN前向传播类。
+ * @author lihuagit (3190995951@qq.com)
+ * @version 1.0
+ * @date 2022-05-16
+ * 
+ */
 
 #ifndef _CLASSIFIER_H_
 #define _CLASSIFIER_H_

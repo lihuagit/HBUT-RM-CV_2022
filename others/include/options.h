@@ -1,6 +1,11 @@
-//
-// Created by xinyang on 19-3-27.
-//
+/**
+ * @file options.h
+ * @brief 一些开关
+ * @author lihuagit (3190995951@qq.com)
+ * @version 1.0
+ * @date 2022-05-16
+ * 
+ */
 
 #ifndef _OPTIONS_H_
 #define _OPTIONS_H_

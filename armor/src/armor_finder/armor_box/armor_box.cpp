@@ -1,6 +1,11 @@
-//
-// Created by xinyang on 19-7-13.
-//
+/**
+ * @file armor_box.cpp
+ * @brief ArmorBox类的部分类函数以及功能函数实现
+ * @author lihuagit (3190995951@qq.com)
+ * @version 1.0
+ * @date 2022-05-16
+ * 
+ */
 
 #include <armor_finder/armor_finder.h>
 #include <log.h>

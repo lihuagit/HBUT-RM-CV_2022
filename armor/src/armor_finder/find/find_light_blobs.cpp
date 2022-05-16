@@ -1,7 +1,11 @@
-//
-// Created by xinyang on 19-7-10.
-//
-
+/**
+ * @file find_light_blobs.cpp
+ * @brief 灯条函数识别实现
+ * @author lihuagit (3190995951@qq.com)
+ * @version 1.0
+ * @date 2022-05-16
+ * 
+ */
 #include <armor_finder/armor_finder.h>
 #include <options.h>
 #include <opencv2/highgui.hpp>

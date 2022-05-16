@@ -1,6 +1,6 @@
-//
-// Created by xinyang on 19-3-27.
-//
+/**
+ * @brief 显示各种图像
+ */
 
 #ifndef _SHOW_IMAGES_H_
 #define _SHOW_IMAGES_H_

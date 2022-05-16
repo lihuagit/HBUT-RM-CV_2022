@@ -1,6 +1,11 @@
-//
-// Created by xinyang on 2021/3/15.
-//
+/**
+ * @file AdaptiveEKF.h
+ * @brief 相仿上交2021年代码写的EKF 目前还没优化好，没有应用
+ * @author lihuagit (3190995951@qq.com)
+ * @version 1.0
+ * @date 2022-01-17
+ * 
+ */
 #ifdef add_EKF
 #ifndef _ADAPTIVE_EKF_HPP_
 #define _ADAPTIVE_EKF_HPP_
