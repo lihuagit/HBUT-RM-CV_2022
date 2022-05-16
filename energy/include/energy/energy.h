@@ -3,6 +3,9 @@
 //
 #ifndef ENERGY_H
 #define ENERGY_H
+#define FRONT_BACK_PARA    2.0f
+#define DELAY_TIME    0.4f
+#define FRONT_BACK_SIN    0.05f
 
 #include <iostream>
 #include <vector>
@@ -36,7 +39,7 @@ public:
     void setEnergyInit();//设置能量机关初始化
     void sendEnergy();//发送能量机关数据
     void sendTarget(Serial& serial, float x, float y, float z, uint16_t u);//发送数据
-
+    double word_yaw;
 
 private:
     EnergyPartParam energy_part_param_;//能量机关的参数设置
@@ -47,6 +50,7 @@ private:
     bool energy_rotation_init;//若仍在判断风车旋转方向，则为true
     bool start_guess;//进入猜测状态的标志
     bool change_target;//目标切换的标志
+    
 
     uint8_t &ally_color;//我方颜色
 
@@ -61,7 +65,7 @@ private:
     int last_mode;//上一帧的能量机关状态
     int manual_delta_x, manual_delta_y;//手动微调量
     int extra_delta_x, extra_delta_y;//在风车运动到最高点附近的额外补偿量
-    
+
     float target_polar_angle;//待击打装甲板的极坐标角度
     float last_target_polar_angle_judge_change;//上一帧待击打装甲板的极坐标角度（用于判断目标切换）
     float last_target_polar_angle_judge_rotation;//上一帧待击打装甲板的极坐标角度（用于判断旋向）
@@ -72,6 +76,7 @@ private:
     float attack_distance;//步兵与风车平面距离
     float center_delta_yaw, center_delta_pitch;//对心时相差的角度
     float yaw_rotation, pitch_rotation;//云台yaw轴和pitch轴应该转到的角度
+    double dx,dy;
     float shoot;//给主控板的指令，1表示跟随，2表示发射，3表示目标切换,4表示猜测模式
     float last_yaw, last_pitch;//PID中微分项
     float sum_yaw, sum_pitch;//yaw和pitch的累计误差，即PID中积分项
@@ -99,7 +104,7 @@ private:
     std::vector<cv::Point> all_target_armor_centers;//记录全部的装甲板中心，用于风车圆心和半径的计算
 
     std::queue<float> recent_target_armor_centers;//记录最近一段时间的装甲板中心，用于判断大符还是小符
-
+    void calculateRotateSpeed();
 
     void initEnergy();//能量机关初始化
     void initEnergyPartParam();//能量机关参数初始化
@@ -161,6 +166,40 @@ private:
     void FlowStripFanStruct(cv::Mat &src);//腐蚀和膨胀
     void FlowStripStruct(cv::Mat &src);//腐蚀和膨胀
     void CenterRStruct(cv::Mat &src);//腐蚀和膨胀
+
+    enum SPEED_TYPE {
+        SPEED_UP = 0,
+        SPEED_DOWN
+    };
+    struct predictbig{
+        float para=1.305f;
+        float amplitude=0.785f;
+        float rotateIndex = 1.884f;
+        bool shootSpeedLevel = false;//射速等级标志位
+        float lastRotateSpeed = 0.0f;
+        float nowRotateSpeed = 0.0f;
+        float realRotateSpeed = 0.0f;
+        float nowMinSpeed = 100.0f;
+        float realMinSpeed = 0.0f;
+        float nowMaxSpeed = 0.0f;
+        float realMaxSpeed = 0.0f;
+        int minSameNumber = 0;
+        int maxSameNumber = 0;
+        bool minSpeedFlag = false;
+        bool maxSpeedFlag = false;
+        SPEED_TYPE speedType;
+    };
+    float _circleAngle180 = 0.0f;
+    float _circleAngle360 = 0.0f;
+    float _realAddAngle = 0.0f;
+    float _para = 0.0f;
+    float _delayTime = 0.4f;
+    predictbig _predictbig;
+    float calculateShootTime();
+    static inline float PI_F() {
+        return float(CV_PI);
+    }
+
 };
 
 #endif //ENERGY_H

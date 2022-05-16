@@ -76,6 +76,8 @@ bool ArmorFinder::updateSendDateKalman(){
     data.id=target_box.id;
     data.now_t=now_t;
     data.rec_yaw=word_yaw;
+    // std::cout<<"word_yaw"<<std::endl;
+    // std::cout<<word_yaw<<std::endl;
     for(int i=0;i<4;i++)
         data.p[i]=target_box.pts[i];
     double w=im2show.size().width;
@@ -86,7 +88,7 @@ bool ArmorFinder::updateSendDateKalman(){
         data.p[i].y-=h;
         data.p[i].y*=-1;
     }
-    kal_yaw.predict(data,s_data,im2show);
+    kal_yaw.predict(data,sendData,im2show);
     cv::imshow("kalman",im2show);
     return true;
 

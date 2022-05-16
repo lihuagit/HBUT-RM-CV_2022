@@ -12,26 +12,26 @@
 using namespace std;
 using namespace cv;
 
-
-
 //----------------------------------------------------------------------------------------------------------------------
 // 此函数用于计算预测的击打点坐标
 // ---------------------------------------------------------------------------------------------------------------------
 void Energy::rotate(cv::Point target_point) {
     int x1, x2, y1, y2;
     //    为了减小强制转换的误差
+    // target_point.x=target_point.x-320;
+    // target_point.y= -(target_point.y-240);
+    // circle_center_point.x =circle_center_point.x -320;
+    // circle_center_point.y=-(circle_center_point.y-240);
     x1 = circle_center_point.x * 100;
     x2 = target_point.x * 100;
     y1 = circle_center_point.y * 100;
     y2 = target_point.y * 100;
 
     predict_point.x = static_cast<int>(
-            (x1 + (x2 - x1) * cos(-predict_rad * PI / 180.0) - (y1 - y2) * sin(-predict_rad * PI / 180.0)) / 100);
+            (x1 + (x2 - x1) * cos(predict_rad * PI / 180.0) - (y1 - y2) * sin(predict_rad * PI / 180.0)) / 100);
     predict_point.y = static_cast<int>(
-            (y1 - (x2 - x1) * sin(-predict_rad * PI / 180.0) - (y1 - y2) * cos(-predict_rad * PI / 180.0)) / 100);
+            (y1 - (x2 - x1) * sin(predict_rad * PI / 180.0) - (y1 - y2) * cos(predict_rad * PI / 180.0)) / 100);
 }
-
-
 
 
 //----------------------------------------------------------------------------------------------------------------------

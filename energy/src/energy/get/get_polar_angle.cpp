@@ -12,7 +12,7 @@ using namespace std;
 // ---------------------------------------------------------------------------------------------------------------------
 void Energy::getTargetPolarAngle() {
     target_polar_angle = static_cast<float>(180 / PI * atan2(-1 * (target_point.y - circle_center_point.y),
-                                                             (target_point.x - circle_center_point.x)));
+                                                            (target_point.x - circle_center_point.x)));
 }
 
 

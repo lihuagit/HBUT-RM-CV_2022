@@ -25,7 +25,7 @@ int Energy::findFans(const cv::Mat &src) {
     }
     std::vector<vector<Point> > fan_contours;
     FanStruct(src_bin);//图像膨胀，防止图像断开并更方便寻找
-    if (show_process)imshow("fan struct", src_bin);
+    if (show_process)//imshow("fan struct", src_bin);
     findContours(src_bin, fan_contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_NONE);
 
     for (auto &fan_contour : fan_contours) {
@@ -47,6 +47,7 @@ int Energy::findFans(const cv::Mat &src) {
 // 此函数用于寻找图像内所有的大风车装甲板模块
 // ---------------------------------------------------------------------------------------------------------------------
 int Energy::findArmors(const cv::Mat &src) {
+
     if (src.empty()) {
         if (show_info) cout << "empty!" << endl;
         return 0;
@@ -107,7 +108,7 @@ bool Energy::findCenterR(const cv::Mat &src) {
     }
     std::vector<vector<Point> > center_R_contours;
     CenterRStruct(src_bin);
-    if (show_process)imshow("R struct", src_bin);
+    if (show_process)//imshow("R struct", src_bin);
     findContours(src_bin, center_R_contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_NONE);
     for (auto &center_R_contour : center_R_contours) {
         if (!isValidCenterRContour(center_R_contour)) {
@@ -143,7 +144,7 @@ bool Energy::findFlowStripFan(const cv::Mat &src) {
     }
     std::vector<vector<Point> > flow_strip_fan_contours;
     FlowStripFanStruct(src_bin);//图像膨胀，防止图像断开并更方便寻找
-    if (show_process)imshow("flow strip fan struct", src_bin);
+    if (show_process)//imshow("flow strip fan struct", src_bin);
 
     findContours(src_bin, flow_strip_fan_contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_NONE);
     std::vector<cv::RotatedRect> candidate_flow_strip_fans;
@@ -291,7 +292,7 @@ bool Energy::findFlowStripWeak(const cv::Mat &src) {
     }
     if (flow_strips.empty()) {
         if (show_info)cout << "weak flow strip false!" << endl;
-//        waitKey(0);
+        //waitKey(0);
         return false;
     } else {
         for (const auto &candidate_flow_strip: flow_strips) {
@@ -312,6 +313,8 @@ bool Energy::findFlowStripWeak(const cv::Mat &src) {
                 }
                 target_armor = candidate_armor;
                 target_point = candidate_armor.center;
+               // cout<<"("<<target_point.x<<","<<target_point.y<<")"<<endl;
+
                 flow_strip = candidate_flow_strip;
                 return true;
             }

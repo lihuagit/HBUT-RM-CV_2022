@@ -50,16 +50,14 @@ ArmorFinder armor_finder(mcu_data.enemy_color, serial, PROJECT_DIR"/tools/para/"
 Energy energy(serial, mcu_data.enemy_color);
 
 int main(int argc, char *argv[]) {
-    cv::Point2f tmp[4];
-    
 ///////////////////////调参区begin///////////////////
     show_armor_box=true;
-     show_origin=true;
+    show_origin=true;
     // show_armor_box=true;
-    // wait_uart=true;
+    wait_uart=true;
     // save_video=true;
 
-    shoot_delay_t=70;  // 射击延迟
+    shoot_delay_t=0.12;  // 射击延迟
     shoot_v=15;         // 单速
 
     // for 大风车
@@ -76,7 +74,7 @@ int main(int argc, char *argv[]) {
 
     cout<<"PROJECT_DIR: "<<PROJECT_DIR<<endl;
     processOptions(argc, argv);             // 处理命令行参数
-    // thread receive(uartReceive, &serial);   // 开启串口接收线程
+    thread receive(uartReceive, &serial);   // 开启串口接收线程
 
     int from_camera = 1;                    // 根据条件选择视频源
     if (!run_with_camera) {
