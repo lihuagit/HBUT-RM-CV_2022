@@ -10,7 +10,7 @@ predictorKalman::predictorKalman(){
     _Kalman::Matrix_xxd R;
     R(0, 0) = 0.01;
     for (int i = 1; i < S; i++) {
-        R(i, i) = 100;
+        R(i, i) = 0.01;
         // R(i, i) = 0.01;  //for dis   
     }
     _Kalman::Matrix_zzd Q{4};
@@ -51,8 +51,8 @@ bool predictorKalman::predict(src_date &data, send_data &send, cv::Mat &im2show)
 	double z_pos = m_pc(2, 0);
 	double distance = sqrt(x_pos * x_pos + y_pos * y_pos + z_pos * z_pos);
 
-    std::cout << "x_pos y_pos distance" << std::endl;
-    std::cout << x_pos <<" : "<< y_pos <<" : " << distance << std::endl;
+    // std::cout << "x_pos y_pos distance" << std::endl;
+    // std::cout << x_pos <<" : "<< y_pos <<" : " << distance << std::endl;
 
 	double tan_pitch = y_pos / sqrt(x_pos*x_pos + z_pos * z_pos);
 	double tan_yaw = x_pos / z_pos;
@@ -83,8 +83,15 @@ bool predictorKalman::predict(src_date &data, send_data &send, cv::Mat &im2show)
     double c_yaw = state(0, 0);                                   // current yaw: yaw的滤波值，单位弧度
     double c_speed = state(1, 0) * m_pc.norm();                      // current speed: 角速度转线速度，单位m/s
 
+    // std::cout << "c_speed" << std::endl;
+    // std::cout << c_speed << std::endl;
+    // std::cout << " m_pc.norm()" << std::endl;
+    // std::cout <<  m_pc.norm() << std::endl;
     
-    double predict_time = m_pc.norm() / shoot_v + shoot_delay_t;           // 预测时间=发射延迟+飞行时间（单位:s）
+    double predict_time = ( m_pc.norm() / shoot_v ) * 1 + shoot_delay_t;           // 预测时间=发射延迟+飞行时间（单位:s）
+    predict_time*=1000;
+    // std::cout << " predict_time" << std::endl;
+    // std::cout << predict_time << std::endl;
     double p_yaw = c_yaw + atan2(predict_time * c_speed, m_pc.norm());     // predict yaw: yaw的预测值，直线位移转为角度，单位弧度
     p_yaw+=rec_yaw;
 
@@ -130,7 +137,7 @@ bool predictorKalman::predict(src_date &data, send_data &send, cv::Mat &im2show)
 	// re_project_point(im2show, c_pw, {0, 255, 0});
 	re_project_point(im2show, p_pw, {255, 0, 0});
 	re_project_point(im2show, s_pw, {0, 0, 255});
-	re_project_point(im2show, m_pc, {0, 0, 255});
+	re_project_point(im2show, m_pc, {0, 255, 0});
 
 	double s_x_pos = s_pw(0, 0);
 	double s_y_pos = s_pw(1, 0);
@@ -142,12 +149,12 @@ bool predictorKalman::predict(src_date &data, send_data &send, cv::Mat &im2show)
 
 	double s_tan_pitch = s_y_pos / sqrt(s_x_pos*s_x_pos + s_z_pos * s_z_pos);
 	double s_tan_yaw = s_x_pos / s_z_pos;
-	double s_mc_pitch = atan(tan_pitch);
-    double s_mc_yaw = atan(tan_yaw);
+	double s_mc_pitch = atan(s_tan_pitch);
+    double s_mc_yaw = atan(s_tan_yaw);
 
     
-    std::cout << "s_mc_yaw s_mc_pitch" << std::endl;
-    std::cout << s_mc_yaw <<" : "<< s_mc_pitch << std::endl;
+    // std::cout << "s_mc_yaw s_mc_pitch" << std::endl;
+    // std::cout << s_mc_yaw <<" : "<< s_mc_pitch << std::endl;
 
     send.send_yaw=s_mc_yaw-rec_yaw;
     send.send_pitch=s_mc_pitch;
@@ -171,7 +178,7 @@ Eigen::Vector3d predictorKalman::pnp_get_pc(const cv::Point2f p[4], int armor_nu
     std::vector<cv::Point2d> pu(p, p + 4);
     cv::Mat rvec, tvec;
 
-    if (armor_number == 0 || armor_number == 1 || armor_number==8 )
+    if (armor_number == 0 || armor_number == 1 || armor_number==8 || armor_number==7 || armor_number==14 || armor_number==6 || armor_number==13)
         cv::solvePnP(pw_big, pu, F_MAT, C_MAT, rvec, tvec);
     else
         cv::solvePnP(pw_small, pu, F_MAT, C_MAT, rvec, tvec);
@@ -182,6 +189,7 @@ Eigen::Vector3d predictorKalman::pnp_get_pc(const cv::Point2f p[4], int armor_nu
     // std::cout<<pc<<std::endl;
     // pc[0] -= 0.04;
     // pc[1] -= 0.01;
-    // pc[2] += 0.02385;
+    // pc[2] += 0.52385;
+    // pc[2] *= 1.5;
     return pc;
 }
