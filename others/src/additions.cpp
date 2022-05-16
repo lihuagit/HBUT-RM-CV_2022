@@ -34,8 +34,10 @@ void uartReceive(Serial *pSerial) {
     while (true) {
         memset(buffer, 0, sizeof(buffer));
         pSerial->ReadData((uint8_t *) buffer, 15);
-        if(strlen(buffer)>=5)
+        if(strlen(buffer)>=5){
             sscanf(buffer,"%f",&(armor_finder.word_yaw));
+            energy.word_yaw=armor_finder.word_yaw;
+        }
     }
 }
 
