@@ -28,15 +28,44 @@ extern uint8_t last_state;
 extern ArmorFinder armor_finder;
 extern Energy energy;
 
+extern McuData mcu_data;
+
 void uartReceive(Serial *pSerial) {
     char buffer[40];
     LOGM(STR_CTR(WORD_LIGHT_WHITE, "data receive start!"));
     while (true) {
         memset(buffer, 0, sizeof(buffer));
-        pSerial->ReadData((uint8_t *) buffer, 15);
+        pSerial->ReadData((uint8_t *) buffer, 20);
         if(strlen(buffer)>=5){
-            sscanf(buffer,"%f",&(armor_finder.word_yaw));
+            char mode=buffer[0];
+            sscanf(buffer+1,"%f",&(armor_finder.word_yaw));
             energy.word_yaw=armor_finder.word_yaw;
+            // 预测模式
+            if(mode == 'Y'){
+                mcu_data.state=ARMOR_STATE;
+                shoot_delay_t=0.12;  // 射击延迟
+                shoot_v=15;         // 单速
+            // 不预测
+            }else if(mode == 'B'){
+                mcu_data.state=ARMOR_STATE;
+                shoot_delay_t=0;  // 射击延迟
+                shoot_v=0;         // 单速
+            // 小符
+            }else if(mode == 'D'){
+                mcu_data.state=SMALL_ENERGY_STATE;
+                // shoot_delay_t=0;  // 射击延迟
+                // shoot_v=0;         // 单速
+            // 大符
+            }else if(mode == 'X'){
+                mcu_data.state=BIG_ENERGY_STATE;
+                // shoot_delay_t=0;  // 射击延迟
+                // shoot_v=0;         // 单速
+            // 切换颜色
+            }else if(mode == 'Q'){
+                if(mcu_data.enemy_color == ENEMY_RED)
+                    mcu_data.enemy_color=ENEMY_BLUE;
+                else mcu_data.enemy_color=ENEMY_RED;
+            }
         }
     }
 }
