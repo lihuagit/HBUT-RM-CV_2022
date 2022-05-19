@@ -84,7 +84,10 @@ bool CameraWrapper::init() {
     }
     LOGM("successfully loaded %s!", filepath);
 #elif defined(Linux)
-    CameraReadParameterFromFile(h_camera, PROJECT_DIR"/others/armor_lihua_5.Config");
+    // 都相机配置文件，armor_lihua_6.Config 这个文件读一遍发黄，读两遍正常   奇怪。。。
+    CameraReadParameterFromFile(h_camera, PROJECT_DIR"/others/armor_lihua_6.Config");
+    CameraReadParameterFromFile(h_camera, PROJECT_DIR"/others/armor_lihua_6.Config");
+    CameraReadParameterFromFile(h_camera, PROJECT_DIR"/others/armor_lihua_6.Config");
     // CameraSetGain(h_camera,152,85,151);
     // CameraLoadParameter(h_camera, PARAMETER_TEAM_A);
     // CameraSetAeState(h_camera, false);
@@ -99,7 +102,6 @@ bool CameraWrapper::init() {
     CameraGetExposureTime(h_camera, &t);
     CameraGetAnalogGain(h_camera, &g);
     LOGM("Exposure time: %lfms, gain:%d", t / 1000.0, g);
-    CameraReadParameterFromFile(h_camera, PROJECT_DIR"/others/armor_lihua_5.Config");
     /*让SDK进入工作模式，开始接收来自相机发送的图像
     数据。如果当前相机是触发模式，则需要接收到
     触发帧以后才会更新图像。    */
