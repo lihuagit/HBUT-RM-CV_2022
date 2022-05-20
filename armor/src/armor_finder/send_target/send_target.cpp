@@ -14,9 +14,6 @@
 #include <string.h>
 
 static bool sendTarget(Serial &serial, float x, float y /*, double z, uint16_t shoot_delay*/) {
-    static short x_tmp, y_tmp, z_tmp;
-    uint8_t buff[10];
-
 // 显示fps
 #ifdef WITH_COUNT_FPS
     static time_t last_time = time(nullptr);
@@ -30,8 +27,8 @@ static bool sendTarget(Serial &serial, float x, float y /*, double z, uint16_t s
     fps += 1;
 #endif
 
-    x_tmp = static_cast<short>(x * (32768 - 1) / 100);
-    y_tmp = static_cast<short>(y * (32768 - 1) / 100);
+    uint8_t buff[10];
+    if(isnan(x) || isnan(y)) return false;
 
     buff[0] = 's';
     // printf("x:%f\n",x);

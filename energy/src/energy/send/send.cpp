@@ -85,6 +85,7 @@ void Energy::sendTarget(Serial &serial, float x, float y, float z, uint16_t u) {
 #endif
     buff[0] = 's';
     // printf("x:%f\n",x);
+    if(isnan(x) || isnan(y)) return ;
     float test = x;
     memcpy(buff + 1, &test, 4);
     test = y;
