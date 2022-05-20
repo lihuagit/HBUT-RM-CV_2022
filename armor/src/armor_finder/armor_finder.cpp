@@ -117,6 +117,7 @@ end:
             // showArmorBox("box", src, target_box,kal_rect);
         // else showArmorBox("box", src, target_box);
         showArmorBox("box", src, target_box);
+        cv::imshow("kalman",im2show);
         cv::waitKey(1);
     }
 }

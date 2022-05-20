@@ -94,7 +94,6 @@ bool ArmorFinder::updateSendDateKalman(){
         data.p[i].y*=-1;
     }
     kal_yaw.predict(data,sendData,im2show);
-    cv::imshow("kalman",im2show);
     return true;
 
 

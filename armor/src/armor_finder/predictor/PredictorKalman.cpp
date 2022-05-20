@@ -181,7 +181,14 @@ bool predictorKalman::predict(src_date &data, send_data &send, cv::Mat &im2show)
     /// update发送数据，目前与电控的协议是yaw绝对坐标， pitch相对坐标
     send.send_yaw=s_mc_yaw-rec_yaw;
     send.send_pitch=s_mc_pitch;
-    
+    char buff[40];
+    sprintf(buff, "id: %f", tag_id);
+    // int len=sizeof(buff);
+    sprintf(buff+5, " ; ");
+    sprintf(buff+8, "dis: %f", s_distance);
+    // std::cout<<buff<<std::endl;
+    putText(im2show, buff, cv::Point(0,50), cv::FONT_HERSHEY_TRIPLEX, 1,
+            cv::Scalar(0, 255, 0));
     return true;
 }
 
