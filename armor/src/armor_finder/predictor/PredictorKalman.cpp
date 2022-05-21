@@ -111,6 +111,7 @@ bool predictorKalman::predict(src_date &data, send_data &send, cv::Mat &im2show)
     double p_yaw = c_yaw + atan2(predict_time * c_speed, m_pc.norm());     // predict yaw: yaw的预测值，直线位移转为角度，单位弧度
     // 绝对角度转相对相对角度
     p_yaw+=rec_yaw;
+    if(!is_predictor) p_yaw=mc_yaw;
 
     double length = sqrt(m_pc(0, 0) * m_pc(0, 0) + m_pc(1, 0) * m_pc(1, 0));
     Eigen::Vector3d c_pw{length * cos(c_yaw), length * sin(c_yaw), m_pc(2, 0)};//反解位置(世界坐标系)

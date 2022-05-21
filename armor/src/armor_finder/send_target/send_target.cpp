@@ -50,14 +50,14 @@ static bool sendTarget(Serial &serial, float x, float y /*, double z, uint16_t s
  * @return false 
  */
 bool ArmorFinder::sendBoxPosition(uint16_t shoot_delay) {
-    if(is_predictor){
+    // if(is_predictor){
         #ifdef add_EKF
         if(is_predictorEKF) updateSendDateEKF();
         else
         #endif
         if(is_predictorKalman) updateSendDateKalman();
         else updateSendDate();
-    }else updateSendDate();
+    // }else updateSendDate();
     return sendTarget(serial, sendData.send_yaw, sendData.send_pitch/*, (int16_t)sendData.send_dist, shoot_delay*/);
 }
 
