@@ -155,12 +155,14 @@ private:
     void LinearSmooth72(std::queue<double> &Input, int size);// 对距离滤波
 public:
     void run(cv::Mat &src);                             // 自瞄主函数
-    predictorKalman kal_yaw;                            // kalman滤波器
+    predictorKalman kal_yaw_pitch;                            // kalman滤波器                   
+
     #ifdef add_EKF
     PredictorAdaptiveEKF ekf;                           // EKF滤波器
     #endif  // add_EKF
     systime now_t;
     float word_yaw;                                     //接收电控的云台位姿，用来计算世界坐标
+    float word_pitch;                                     //接收电控的云台位姿，用来计算世界坐标
     /**
      * @brief 
      * 待发送数据包

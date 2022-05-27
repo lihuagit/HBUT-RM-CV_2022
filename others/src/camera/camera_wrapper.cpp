@@ -85,9 +85,9 @@ bool CameraWrapper::init() {
     LOGM("successfully loaded %s!", filepath);
 #elif defined(Linux)
     // 都相机配置文件，armor_lihua_6.Config 这个文件读一遍发黄，读两遍正常   奇怪。。。
-    CameraReadParameterFromFile(h_camera, PROJECT_DIR"/others/armor_lihua_6.Config");
-    CameraReadParameterFromFile(h_camera, PROJECT_DIR"/others/armor_lihua_6.Config");
-    CameraReadParameterFromFile(h_camera, PROJECT_DIR"/others/armor_lihua_6.Config");
+    CameraReadParameterFromFile(h_camera, PROJECT_DIR"/others/armor_lihua_3.Config");
+    CameraReadParameterFromFile(h_camera, PROJECT_DIR"/others/armor_lihua_3.Config");
+    CameraReadParameterFromFile(h_camera, PROJECT_DIR"/others/armor_lihua_3.Config");
     // CameraSetGain(h_camera,152,85,151);
     // CameraLoadParameter(h_camera, PARAMETER_TEAM_A);
     // CameraSetAeState(h_camera, false);

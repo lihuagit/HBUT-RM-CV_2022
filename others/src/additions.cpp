@@ -35,21 +35,31 @@ void uartReceive(Serial *pSerial) {
     LOGM(STR_CTR(WORD_LIGHT_WHITE, "data receive start!"));
     while (true) {
         memset(buffer, 0, sizeof(buffer));
-        pSerial->ReadData((uint8_t *) buffer, 20);
+        pSerial->ReadData((uint8_t *) buffer, 15);
+       //std::cout<<strlen(buffer)<<std::endl;
         if(strlen(buffer)>=5){
             char mode=buffer[0];
-            sscanf(buffer+1,"%f",&(armor_finder.word_yaw));
-            energy.word_yaw=armor_finder.word_yaw;
+            char mode_shoot=buffer[1];
+            memcpy(&(armor_finder.word_yaw), buffer+2, 4);
+            memcpy(&(armor_finder.word_pitch), buffer+6, 4);
+            // sscanf(buffer+1,"%f",&(armor_finder.word_yaw));
+            // std::cout<<"armor_finder.word_yaw: ";
+            // std::cout<<armor_finder.word_yaw<<std::endl;
+            // std::cout<<"armor_finder.word_pitch: ";
+            // std::cout<<armor_finder.word_pitch<<std::endl;
+            //  energy.word_yaw=armor_finder.word_yaw;
+            // energy.word_pitch=armor_finder.word_pitch;
+            //std::cout<<"mode_1 is::  "<<mode_1<<std::endl;
             // 预测模式
             if(mode == 'Y'){
                 mcu_data.state=ARMOR_STATE;
-                shoot_delay_t=0.12;  // 射击延迟
-                shoot_v=15;         // 单速
+                // shoot_delay_t=0.12;  // 射击延迟
+                // shoot_v=15;         // 单速
             // 不预测
             }else if(mode == 'B'){
                 mcu_data.state=ARMOR_STATE;
-                shoot_delay_t=0;  // 射击延迟
-                shoot_v=0;         // 单速
+                // shoot_delay_t=0;  // 射击延迟
+                // shoot_v=0;         // 单速
             // 小符
             }else if(mode == 'D'){
                 mcu_data.state=SMALL_ENERGY_STATE;
@@ -66,6 +76,9 @@ void uartReceive(Serial *pSerial) {
                     mcu_data.enemy_color=ENEMY_BLUE;
                 else mcu_data.enemy_color=ENEMY_RED;
             }
+            if(mode_shoot==1) shoot_v=14;
+            else if(mode_shoot==2) shoot_v=17;
+            else if(mode_shoot==2) shoot_v=28;
         }
     }
 }
