@@ -9,17 +9,28 @@ using namespace cv;
 using std::cout;
 using std::endl;
 using std::vector;
+
 //计算实时角速度
 void Energy::calculateRotateSpeed() {
 //定义静态过去和现在角度；
+    _circleAngle180 = target_polar_angle;
+    //旋转角度处理
+    if (circle_center_point.y < target_point.y) {
+        _circleAngle360 = 360.0f - _circleAngle180;
+        _circleAngle180 = -_circleAngle180;
+    } else {
+        _circleAngle360 = _circleAngle180;
+    }
     static double nowAngle = 0.0f;
     static double lastAngle = 0.0f;
     static int count = 0;
-    //定义过去和现在时间
-    static double lastTime = (double) cv::getTickCount() / cv::getTickFrequency() * 1000; // ms，过去
-    double curTime = (double) cv::getTickCount() / cv::getTickFrequency() * 1000;//现在
+    //定义过去和现在时间ms
+    static double lastTime = (double) cv::getTickCount() / cv::getTickFrequency() * 1000; //过去，1000 *总次数/一秒内重复的次数= 时间(ms)
+    double curTime = (double) cv::getTickCount() / cv::getTickFrequency()* 1000;//现在
+    //cout<<curTime<<"ms"<<endl;
     //如果叶片没有跳变，则把过去和现在角度以及过去和现在速度置零
-    if (change_target) {
+    
+    if (change_target==false) {
         lastAngle = nowAngle = _predictbig.lastRotateSpeed =_predictbig.nowRotateSpeed = 0.0f;
         return;
     }
@@ -35,7 +46,7 @@ void Energy::calculateRotateSpeed() {
     //帧数递增
     count++;
     nowAngle = _circleAngle360;
-    //计算实时角速度
+    //计算实时角速度,rad/s
     _predictbig.nowRotateSpeed = (float) fabs(((nowAngle - lastAngle)*PI/180) * (1000.0f / (curTime - lastTime)));
     //过去角度和时间更新
     lastAngle = nowAngle;
@@ -45,7 +56,7 @@ void Energy::calculateRotateSpeed() {
         _predictbig.lastRotateSpeed =_predictbig.nowRotateSpeed;
         return;
     }
-    //防止出现异常数据
+    //防止出现异常数据，如果现在角速度绝对值大于5
     if (_predictbig.nowRotateSpeed > 5 ||_predictbig.nowRotateSpeed < -5) {
         return;
     }
@@ -58,6 +69,7 @@ void Energy::calculateRotateSpeed() {
     //如果速度没有替换最大速度，则计数加1
     if (_predictbig.nowMaxSpeed < _predictbig.nowRotateSpeed) {
         _predictbig.nowMaxSpeed = _predictbig.nowRotateSpeed;
+
     } else {
         _predictbig.maxSameNumber++;
     }
@@ -65,17 +77,22 @@ void Energy::calculateRotateSpeed() {
     if (_predictbig.minSameNumber > 20 && !_predictbig.minSpeedFlag) {
         _predictbig.realMinSpeed = _predictbig.nowMinSpeed;
         _predictbig.minSpeedFlag = true;
+        
     }
     //如果连续20帧没有刷新最大速度，则该速度为波峰速度（该速度一旦更新，便不再更新）
     if (_predictbig.maxSameNumber > 20 && !_predictbig.maxSpeedFlag) {
         _predictbig.realMaxSpeed = _predictbig.nowMaxSpeed;
         _predictbig.maxSpeedFlag = true;
+        
     }
 
     _predictbig.realRotateSpeed = _predictbig.nowRotateSpeed;
+    //cout<<_predictbig.realRotateSpeed<<endl;
     _predictbig.speedType = (_predictbig.nowRotateSpeed > _predictbig.lastRotateSpeed ? SPEED_UP : SPEED_DOWN);
+    
 }
 float Energy::calculateShootTime() {
+    
     if (_predictbig.realRotateSpeed <= 0.0f) {
         return float();
     }
@@ -91,7 +108,7 @@ float Energy::calculateShootTime() {
     }
     possibleTime[0] = (asinf((_predictbig.realRotateSpeed - _predictbig.para) / _predictbig.amplitude)) / _predictbig.rotateIndex;
     possibleTime[1] = (possibleTime[0] > 0 ? PI_F() / (_predictbig.rotateIndex) - possibleTime[0] : PI_F() / (-_predictbig.rotateIndex) - possibleTime[0]);
-   // cout << "    " << _predictbig.speedType << endl;
+    cout << "    " << _predictbig.speedType << endl;
     realTime = (_predictbig.speedType == SPEED_UP ? possibleTime[0] : possibleTime[1]);
     //cout << "time--" << fabs(possibleTime[0] - possibleTime[1]) << endl;
     return realTime;
@@ -125,13 +142,13 @@ void Energy::getPredictPoint(cv::Point target_point) {
         {
             _predictbig.para += FRONT_BACK_SIN;
             _predictbig.amplitude += FRONT_BACK_SIN;
-            predict_rad = _realAddAngle;
+            predict_rad = -_realAddAngle;
         }
         else if (energy_rotation_direction == -1) 
         {
             _predictbig.para -= FRONT_BACK_SIN;
             _predictbig.amplitude -= FRONT_BACK_SIN;
-            predict_rad = -_realAddAngle;
+            predict_rad = _realAddAngle;
         }
         rotate(target_point);
     }

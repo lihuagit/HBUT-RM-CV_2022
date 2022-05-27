@@ -41,7 +41,7 @@ void Energy::initEnergy() {
     guess_polar_angle = -1000;
     last_base_angle = -1000;
     predict_rad = 0;
-    predict_rad_norm = 25;
+    predict_rad_norm = 15;
     attack_distance = ATTACK_DISTANCE;
     center_delta_yaw = 1000;
     center_delta_pitch = 1000;
@@ -57,6 +57,30 @@ void Energy::initEnergy() {
     target_point = Point(0, 0);
     guess_point = Point(0, 0);
     predict_point = Point(0, 0);
+    d=Point(0,0);
+    //大能量机关初始化
+    _predictbig.para=1.305f;
+    _predictbig.amplitude=0.785f;
+    _predictbig.rotateIndex = 1.884f;
+    _predictbig.shootSpeedLevel = false;//射速等级标志位
+    _predictbig.lastRotateSpeed = 0.0f;
+    _predictbig.nowRotateSpeed = 0.0f;
+    _predictbig.realRotateSpeed = 0.0f;
+    _predictbig.nowMinSpeed = 100.0f;
+    _predictbig.realMinSpeed = 0.0f;
+    _predictbig.nowMaxSpeed = 0.0f;
+    _predictbig.realMaxSpeed = 0.0f;
+    _predictbig.minSameNumber = 0;
+    _predictbig.maxSameNumber = 0;
+    _predictbig.minSpeedFlag = false;
+    _predictbig.maxSpeedFlag = false;
+    SPEED_TYPE speedType;
+
+    _circleAngle180 = 0.0f;
+    _circleAngle360 = 0.0f;
+    _realAddAngle = 0.0f;
+    _para = 0.0f;
+    _delayTime = 0.4f;
 
     fans.clear();
     armors.clear();
@@ -65,7 +89,14 @@ void Energy::initEnergy() {
     flow_strips.clear();
     all_target_armor_centers.clear();
     while (!recent_target_armor_centers.empty())recent_target_armor_centers.pop();
-
+    // _circleAngle180 = target_polar_angle;
+    // //旋转角度处理
+    // if (circle_center_point.y < target_point.y) {
+    //     _circleAngle360 = 360.0f - _circleAngle180;
+    //     _circleAngle180 = -_circleAngle180;
+    // } else {
+    //     _circleAngle360 = _circleAngle180;
+    // }
 }
 
 
@@ -73,11 +104,11 @@ void Energy::initEnergy() {
 // 此函数对能量机关参数进行初始化
 // ---------------------------------------------------------------------------------------------------------------------
 void Energy::initEnergyPartParam() {
-    energy_part_param_.RED_GRAY_THRESH = 180;//game
+    energy_part_param_.RED_GRAY_THRESH = 160;//game
     energy_part_param_.BLUE_GRAY_THRESH = 100;//game
     energy_part_param_.SPLIT_GRAY_THRESH = 180;
 
-    energy_part_param_.FAN_CONTOUR_AREA_MAX = 5000;
+    energy_part_param_.FAN_CONTOUR_AREA_MAX = 8000;
     energy_part_param_.FAN_CONTOUR_AREA_MIN = 1500;
     energy_part_param_.FAN_CONTOUR_LENGTH_MIN = 45;
     energy_part_param_.FAN_CONTOUR_LENGTH_MAX = 100;
@@ -105,7 +136,7 @@ void Energy::initEnergyPartParam() {
     energy_part_param_.CENTER_R_CONTOUR_HW_RATIO_MAX = 2;
     energy_part_param_.CENTER_R_CONTOUR_HW_RATIO_MIN = 1;
     energy_part_param_.CENTER_R_CONTOUR_AREA_RATIO_MIN = 0.6;
-    energy_part_param_.CENTER_R_CONTOUR_INTERSETION_AREA_MIN = 10;
+    energy_part_param_.CENTER_R_CONTOUR_INTERSETION_AREA_MIN = 15;
 
     energy_part_param_.FLOW_STRIP_FAN_CONTOUR_AREA_MAX = 2000;
     energy_part_param_.FLOW_STRIP_FAN_CONTOUR_AREA_MIN = 500;

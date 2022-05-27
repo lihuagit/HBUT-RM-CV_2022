@@ -32,6 +32,7 @@ public:
 
     bool is_big;//大符模式为true
     bool is_small;//小符模式为true
+    double word_yaw;
 
     void run(cv::Mat &src);
 
@@ -39,7 +40,7 @@ public:
     void setEnergyInit();//设置能量机关初始化
     void sendEnergy();//发送能量机关数据
     void sendTarget(Serial& serial, float x, float y, float z, uint16_t u);//发送数据
-    double word_yaw;
+
 
 private:
     EnergyPartParam energy_part_param_;//能量机关的参数设置
@@ -51,7 +52,7 @@ private:
     bool start_guess;//进入猜测状态的标志
     bool change_target;//目标切换的标志
     
-
+    int count=0;
     uint8_t &ally_color;//我方颜色
 
     int curr_fps;//帧率
@@ -76,7 +77,8 @@ private:
     float attack_distance;//步兵与风车平面距离
     float center_delta_yaw, center_delta_pitch;//对心时相差的角度
     float yaw_rotation, pitch_rotation;//云台yaw轴和pitch轴应该转到的角度
-    double dx,dy;
+    //double dx,dy;
+    double yaw,pitch;
     float shoot;//给主控板的指令，1表示跟随，2表示发射，3表示目标切换,4表示猜测模式
     float last_yaw, last_pitch;//PID中微分项
     float sum_yaw, sum_pitch;//yaw和pitch的累计误差，即PID中积分项
@@ -93,6 +95,7 @@ private:
     cv::Point target_point;//目标装甲板中心坐标
     cv::Point guess_point;
     cv::Point predict_point;//预测的击打点坐标
+    cv::Point d;//弹道补偿后的坐标
 
     cv::Mat src_blue, src_red, src_green;//通道分离中的三个图像通道
 
@@ -168,37 +171,45 @@ private:
     void CenterRStruct(cv::Mat &src);//腐蚀和膨胀
 
     enum SPEED_TYPE {
-        SPEED_UP = 0,
+        SPEED_UP= 0,
         SPEED_DOWN
     };
     struct predictbig{
-        float para=1.305f;
-        float amplitude=0.785f;
-        float rotateIndex = 1.884f;
-        bool shootSpeedLevel = false;//射速等级标志位
-        float lastRotateSpeed = 0.0f;
-        float nowRotateSpeed = 0.0f;
-        float realRotateSpeed = 0.0f;
-        float nowMinSpeed = 100.0f;
-        float realMinSpeed = 0.0f;
-        float nowMaxSpeed = 0.0f;
-        float realMaxSpeed = 0.0f;
-        int minSameNumber = 0;
-        int maxSameNumber = 0;
-        bool minSpeedFlag = false;
-        bool maxSpeedFlag = false;
+        float para;
+        float amplitude;
+        float rotateIndex;
+        bool shootSpeedLevel;//射速等级标志位
+        float lastRotateSpeed;
+        float nowRotateSpeed;
+        float realRotateSpeed;
+        float nowMinSpeed ;
+        float realMinSpeed;
+        float nowMaxSpeed;
+        float realMaxSpeed;
+        int minSameNumber;
+        int maxSameNumber;
+        bool minSpeedFlag;
+        bool maxSpeedFlag;
         SPEED_TYPE speedType;
     };
-    float _circleAngle180 = 0.0f;
-    float _circleAngle360 = 0.0f;
-    float _realAddAngle = 0.0f;
-    float _para = 0.0f;
-    float _delayTime = 0.4f;
+    float _circleAngle180;
+    float _circleAngle360;
+    float _realAddAngle;
+    float _para;
+    float _delayTime;
     predictbig _predictbig;
     float calculateShootTime();
     static inline float PI_F() {
         return float(CV_PI);
     }
+    // static inline float getAngle(cv::Point2f pt1, cv::Point2f pt2, cv::Point2f pt0) {
+    //     float dx1 = pt1.x - pt0.x;
+    //     float dy1 = pt1.y - pt0.y;
+    //     float dx2 = pt2.x - pt0.x;
+    //     float dy2 = pt2.y - pt0.y;
+    //     float angle_line = (dx1 * dx2 + dy1 * dy2) / sqrtf((dx1 * dx1 + dy1 * dy1) * (dx2 * dx2 + dy2 * dy2) + 1e-10f);
+    //     return acosf(angle_line) * 180.0f / 3.141592653f;
+    // }
 
 };
 

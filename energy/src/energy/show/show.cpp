@@ -87,7 +87,7 @@ void Energy::showCenterR(std::string windows_name, const cv::Mat &src) {
 
     cv::circle(image2show, circle_center_point, 4, cv::Scalar(0, 0, 255), 2);//在图像中画出特征点，2是圆的半径
     cv::circle(image2show,target_point,5,cv::Scalar(0,0,255),1);//目标点
-    cv::circle(image2show,predict_point,5,cv::Scalar(0,255,0),1);
+    cv::circle(image2show,d,5,cv::Scalar(0,255,0),1);//预测点
     imshow(windows_name, image2show);
 }
 

@@ -38,10 +38,13 @@ void Energy::sendEnergy() {
     // } else {
     //     sendTarget(serial, yaw_rotation, pitch_rotation, shoot, 0);//跟随或发弹
     // }
-    double x=predict_point.x-320;
-    double y=predict_point.y-240;
-    double yaw = atan(dx / FOCUS_PIXAL) * 180 / PI;
-    double pitch = atan(dy / FOCUS_PIXAL) * 180 / PI;
+    double x=d.x-320;
+    double y=d.y-240;
+    
+    // double yaw = atan(x / FOCUS_PIXAL) * 180 / PI;
+    // double pitch = atan(y / FOCUS_PIXAL) * 180 / PI;
+    double yaw = atan(x / FOCUS_PIXAL);
+    double pitch = atan(y / FOCUS_PIXAL);
     yaw-=word_yaw;
 /**********************发送击打点中心坐标************************/
 if (change_target) {
@@ -83,9 +86,13 @@ void Energy::sendTarget(Serial &serial, float x, float y, float z, uint16_t u) {
     }
     fps += 1;
 #endif
+
+    if(isnan( x ) || isnan( y )){
+        std::cout<<"data error: "<<x<<" : "<<y<<std::endl;
+        return ;
+    }
     buff[0] = 's';
     // printf("x:%f\n",x);
-    if(isnan(x) || isnan(y)) return ;
     float test = x;
     memcpy(buff + 1, &test, 4);
     test = y;

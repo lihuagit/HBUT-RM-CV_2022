@@ -33,11 +33,16 @@ void Energy::run(cv::Mat &src) {
         if (!findFlowStrip(src)) return;
     }
     
+    cout<<"the target armor.x"<<target_armor.size<<endl;
+    double energ_armor_points[4];
+    
     findCenterROI(src);
     
     if (show_energy)showFlowStrip("strip", src);
 
-    if (!findCenterR(src)) return;
+    if (!findCenterR(src))
+         return;
+ 
     if (show_energy)showCenterR("R", src);
 
     fans_cnt = findFans(src);

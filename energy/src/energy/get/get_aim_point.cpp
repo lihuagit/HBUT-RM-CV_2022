@@ -28,7 +28,7 @@ void Energy::getAimPoint(cv::Point target_point_) {
         extra_delta_x = 0;
         extra_delta_y = 0;
     }
-
+    //cout<<"最高点补偿:"<<extra_delta_x<<","<<extra_delta_y<<endl;
     int compensate_yaw = 0, compensate_pitch = 0;
     if (mcu_data.enemy_color == ENEMY_BLUE) {
         compensate_yaw = RED_COMPENSATE_YAW;
@@ -36,14 +36,16 @@ void Energy::getAimPoint(cv::Point target_point_) {
     } else if (mcu_data.enemy_color == ENEMY_RED) {
         compensate_yaw = BLUE_COMPENSATE_YAW;
         compensate_pitch = BLUE_COMPENSATE_PITCH;
-    }
+    }//补偿量：yaw=5,pitch=74
 
-    dx = -(target_point_.x - 320 - compensate_yaw - mcu_data.delta_x - manual_delta_x - extra_delta_x);
-    dy = -(target_point_.y - 240 - compensate_pitch - mcu_data.delta_y - manual_delta_y - extra_delta_y);
-    yaw_rotation = atan(dx / FOCUS_PIXAL) * 180 / PI;
-    pitch_rotation = atan(dy / FOCUS_PIXAL) * 180 / PI;
-//    cout << "yaw: " << yaw_rotation << '\t' << "pitch: " << pitch_rotation << endl;
-//    cout << "mcu_data.delta_x: " << mcu_data.delta_x << '\t' << "mcu_data.delta_y: " << mcu_data.delta_y << endl;
-//    cout << "manual delta: " << manual_delta_x << '\t' << manual_delta_y << endl;
+    d.x = target_point_.x -compensate_yaw - mcu_data.delta_x - manual_delta_x - extra_delta_x;//x-320-5-微调-最高点补偿
+    d.y = target_point_.y -compensate_pitch - mcu_data.delta_y - manual_delta_y - extra_delta_y;//y-240-74-微调-最高点补偿
+    //cout<<"yuce:"<<d.x<<","<<d.y<<endl;
+    // yaw = atan(d.x / FOCUS_PIXAL) * 180 / PI;
+    // pitch = atan(d.y / FOCUS_PIXAL) * 180 / PI;
+    //cout << "yaw: " << yaw_rotation << '\t' << "pitch: " << pitch_rotation << endl;
+    // cout << "mcu_data.delta_x: " << mcu_data.delta_x << '\t' << "mcu_data.delta_y: " << mcu_data.delta_y << endl;
+    // cout << "manual delta: " << manual_delta_x << '\t' << manual_delta_y << endl;
+    //cout<<"extra_delta_x   extra_delta_y:"<<extra_delta_x<<'\t'<<extra_delta_y<<endl;
 
 }

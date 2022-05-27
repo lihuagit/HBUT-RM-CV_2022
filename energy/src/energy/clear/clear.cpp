@@ -31,6 +31,7 @@ void Energy::initImage(cv::Mat &src) {
     }
     if (mcu_data.enemy_color == ENEMY_BLUE){
         threshold(src, src, energy_part_param_.RED_GRAY_THRESH, 255, THRESH_BINARY);
+                                         //红蓝通道相减
     } else if(mcu_data.enemy_color == ENEMY_RED){
         threshold(src, src, energy_part_param_.BLUE_GRAY_THRESH, 255, THRESH_BINARY);
     }

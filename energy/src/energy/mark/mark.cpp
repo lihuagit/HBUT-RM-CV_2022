@@ -1,6 +1,3 @@
-//
-// Created by sun on 19-7-5.
-//
 
 #include "energy/energy.h"
 

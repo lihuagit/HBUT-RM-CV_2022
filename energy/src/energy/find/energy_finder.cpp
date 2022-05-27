@@ -25,7 +25,7 @@ int Energy::findFans(const cv::Mat &src) {
     }
     std::vector<vector<Point> > fan_contours;
     FanStruct(src_bin);//图像膨胀，防止图像断开并更方便寻找
-    if (show_process)//imshow("fan struct", src_bin);
+    if (show_process)imshow("fan struct", src_bin);
     findContours(src_bin, fan_contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_NONE);
 
     for (auto &fan_contour : fan_contours) {
@@ -156,7 +156,7 @@ bool Energy::findFlowStripFan(const cv::Mat &src) {
         flow_strip_fans.emplace_back(cv::minAreaRect(flow_strip_fan_contour));
     }
     if (flow_strip_fans.empty()) {
-        if (show_info)cout << "flow strip fan false!" << endl;\
+        if (show_info)cout << "flow strip fan false!" << endl;
         return false;
     }
     return true;
