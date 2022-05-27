@@ -53,23 +53,17 @@ void uartReceive(Serial *pSerial) {
             // 预测模式
             if(mode == 'Y'){
                 mcu_data.state=ARMOR_STATE;
-                // shoot_delay_t=0.12;  // 射击延迟
-                // shoot_v=15;         // 单速
+                is_predictor=true;
             // 不预测
             }else if(mode == 'B'){
                 mcu_data.state=ARMOR_STATE;
-                // shoot_delay_t=0;  // 射击延迟
-                // shoot_v=0;         // 单速
+                is_predictor=false;
             // 小符
             }else if(mode == 'D'){
                 mcu_data.state=SMALL_ENERGY_STATE;
-                // shoot_delay_t=0;  // 射击延迟
-                // shoot_v=0;         // 单速
             // 大符
             }else if(mode == 'X'){
                 mcu_data.state=BIG_ENERGY_STATE;
-                // shoot_delay_t=0;  // 射击延迟
-                // shoot_v=0;         // 单速
             // 切换颜色
             }else if(mode == 'Q'){
                 if(mcu_data.enemy_color == ENEMY_RED)

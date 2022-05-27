@@ -153,13 +153,9 @@ bool predictorKalman::predict(src_date &data, send_data &send, cv::Mat &im2show)
     // 绝对角度转相对相对角度
     p_yaw+=rec_yaw;
     pp_pitch+=rec_pitch;
-    // pp_pitch=mc_pitch;
-    // p_yaw=mc_yaw;
-    // pp_pitch+=rec_pitch;
-
-    if(!is_predictor) {
-        p_yaw=mc_yaw;
+    if(!is_predictor){
         pp_pitch=mc_pitch;
+        p_yaw=mc_yaw;
     }
 
     double length = sqrt(m_pc(0, 0) * m_pc(0, 0) + m_pc(1, 0) * m_pc(1, 0));
