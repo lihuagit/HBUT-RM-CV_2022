@@ -70,9 +70,9 @@ void uartReceive(Serial *pSerial) {
                     mcu_data.enemy_color=ENEMY_BLUE;
                 else mcu_data.enemy_color=ENEMY_RED;
             }
-            if(mode_shoot==1) shoot_v=14;
-            else if(mode_shoot==2) shoot_v=17;
-            else if(mode_shoot==2) shoot_v=28;
+            if(mode_shoot=='F') shoot_v=14;
+            else if(mode_shoot=='S') shoot_v=17;
+            else if(mode_shoot=='T') shoot_v=28;
         }
     }
 }
