@@ -62,14 +62,15 @@
     #define RED_COMPENSATE_YAW (5)
 #endif
 #ifndef RED_COMPENSATE_PITCH
-    #define RED_COMPENSATE_PITCH (74)
+    // #define RED_COMPENSATE_PITCH (74)//8米
+    #define RED_COMPENSATE_PITCH (40)
 #endif
 
 #ifndef BLUE_COMPENSATE_YAW
     #define BLUE_COMPENSATE_YAW (5)
 #endif
 #ifndef BLUE_COMPENSATE_PITCH
-    #define BLUE_COMPENSATE_PITCH (74)
+    #define BLUE_COMPENSATE_PITCH (40)
 #endif
 
 #ifndef EXTRA_DELTA_X
