@@ -78,6 +78,8 @@ bool ArmorFinder::updateSendDateKalman(){
     data.id=target_box.id;
     data.now_t=now_t;
     data.rec_yaw=word_yaw;
+    data.rec_pitch=word_pitch;
+
     // std::cout<<"word_yaw"<<std::endl;
     // std::cout<<word_yaw<<std::endl;
     for(int i=0;i<4;i++)
@@ -90,69 +92,70 @@ bool ArmorFinder::updateSendDateKalman(){
         data.p[i].y-=h;
         data.p[i].y*=-1;
     }
-    kal_yaw.predict(data,sendData,im2show);
+    kal_yaw_pitch.predict(data,sendData,im2show);
+    //kal_pitch.predict(data,sendData,im2show);
     return true;
 
 
-    static predictorKalman kal_dis;
-    if (target_box.rect == cv::Rect2d())
-    return false;
+    // static predictorKalman kal_dis;
+    // if (target_box.rect == cv::Rect2d())
+    // return false;
     
-    int16_t dx = target_box.rect.x + target_box.rect.width / 2 - IMAGE_CENTER_X;
-    int16_t dy = -(target_box.rect.y + target_box.rect.height / 2 - IMAGE_CENTER_Y);
-    float c_dist = DISTANCE_HEIGHT / target_box.rect.height*0.666666;   // 单位 cm
+    // int16_t dx = target_box.rect.x + target_box.rect.width / 2 - IMAGE_CENTER_X;
+    // int16_t dy = -(target_box.rect.y + target_box.rect.height / 2 - IMAGE_CENTER_Y);
+    // float c_dist = DISTANCE_HEIGHT / target_box.rect.height*0.666666;   // 单位 cm
 
-    // 对距离进行滤波
-    while (Dis.size() < 6)
-    {
-        Dis.push(c_dist);
-    }
-    if (Dis.size() >= 6)
-    {
-        Dis.push(c_dist);
-    }
-    LinearSmooth72(Dis, 7);
-    c_dist=Dis.front();
-    Dis.pop();
+    // // 对距离进行滤波
+    // while (Dis.size() < 6)
+    // {
+    //     Dis.push(c_dist);
+    // }
+    // if (Dis.size() >= 6)
+    // {
+    //     Dis.push(c_dist);
+    // }
+    // LinearSmooth72(Dis, 7);
+    // c_dist=Dis.front();
+    // Dis.pop();
     
-    // 计算yaw，pitch
-    double p_dist=c_dist*3; // 实际距离 转 像素距离
-    float c_yaw = atan(1.0*dx / p_dist);
-    float c_pitch = atan(1.0*dy / p_dist);                         // 单位 弧度 ： 目前未使用
+    // // 计算yaw，pitch
+    // double p_dist=c_dist*3; // 实际距离 转 像素距离
+    // float c_yaw = atan(1.0*dx / p_dist);
+    // float c_pitch = atan(1.0*dy / p_dist);                         // 单位 弧度 ： 目前未使用
 
-    // 对yaw预测
-    getsystime(now_t);
-    float w_yaw=c_yaw-word_yaw;             // 相机坐标系转世界坐标系 ： 简单的叠加 发送的数据也是世界坐标
-    vector<double> kal_res;
+    // // 对yaw预测
+    // getsystime(now_t);
+    // float w_yaw=c_yaw-word_yaw;             // 相机坐标系转世界坐标系 ： 简单的叠加 发送的数据也是世界坐标
+    // vector<double> kal_res;
 
-    // yaw轴变化幅度大于10度认为发生目标切换 重置滤波器
-    // 滤波返回值kal_res{ (yaw)位置 ， (v)速度 }
-    if(fabs(sendData.send_yaw-w_yaw)<=10. / 180. * M_PI)
-        kal_res=kal_yaw.predictor(w_yaw,now_t);
-    else{
-        kal_yaw.Init(w_yaw,now_t);
-        kal_res.emplace_back(w_yaw);
-        kal_res.emplace_back(0);
-    }
+    // // yaw轴变化幅度大于10度认为发生目标切换 重置滤波器
+    // // 滤波返回值kal_res{ (yaw)位置 ， (v)速度 }
+    // if(fabs(sendData.send_yaw-w_yaw)<=10. / 180. * M_PI)
+    //     kal_res=kal_yaw_pitch.predictor(w_yaw,now_t);
+    // else{
+    //     kal_yaw_pitch.Init(w_yaw,now_t);
+    //     kal_res.emplace_back(w_yaw);
+    //     kal_res.emplace_back(0);
+    // }
 
-    // 预测时间=发射延迟+飞行时间（单位:s）
-    double predict_t;
-    predict_t=( (c_dist/100)/shoot_v ) + shoot_delay_t;
-    sendData.send_yaw=kal_res[0]+kal_res[1]*predict_t;
-    // send_dist=kal_dis.predictor(send_dist,0);    // 使用kalman对距离滤波 ： 已弃用
-    sendData.send_dist=c_dist;
-    sendData.send_pitch=dy;
-    ////////////////////DEBUG//////////////////////
-    bool debug=false;
-    if(debug){
-        printf("dx:%d\n",dx);
-        printf("now_t:%lf\n",now_t);
-        printf("c_yaw:%f\n",c_yaw);
-        printf("word_yaw:%f\n",word_yaw);
-        printf("send_yaw:%f\n",sendData.send_yaw);
-    }
-    ////////////////////DEBUG/////////////////////
-    return true;
+    // // 预测时间=发射延迟+飞行时间（单位:s）
+    // double predict_t;
+    // predict_t=( (c_dist/100)/shoot_v ) + shoot_delay_t;
+    // sendData.send_yaw=kal_res[0]+kal_res[1]*predict_t;
+    // // send_dist=kal_dis.predictor(send_dist,0);    // 使用kalman对距离滤波 ： 已弃用
+    // sendData.send_dist=c_dist;
+    // sendData.send_pitch=dy;
+    // ////////////////////DEBUG//////////////////////
+    // bool debug=false;
+    // if(debug){
+    //     printf("dx:%d\n",dx);
+    //     printf("now_t:%lf\n",now_t);
+    //     printf("c_yaw:%f\n",c_yaw);
+    //     printf("word_yaw:%f\n",word_yaw);
+    //     printf("send_yaw:%f\n",sendData.send_yaw);
+    // }
+    // ////////////////////DEBUG/////////////////////
+    // return true;
 
     // std::cout<<"dist:"<<dist<<std::endl;
     // dx+=20;

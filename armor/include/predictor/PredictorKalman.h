@@ -21,6 +21,7 @@
 constexpr int S=2;
 class predictorKalman{
     using _Kalman = Kalman<1, S>;
+    _Kalman kalman_pitch;
     _Kalman kalman;
     Eigen::Matrix3d R_CI;           // 陀螺仪坐标系到相机坐标系旋转矩阵EIGEN-Matrix
     Eigen::Matrix3d F;              // 相机内参矩阵EIGEN-Matrix

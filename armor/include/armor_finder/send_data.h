@@ -24,6 +24,7 @@ struct src_date
     // 原始数据
     cv::Point2f p[4];
     double rec_yaw;
+    double rec_pitch;
     double id;
     double now_t;
 };

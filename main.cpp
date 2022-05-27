@@ -45,7 +45,7 @@ WrapperHead *video = nullptr;    // 云台摄像头视频源
 Serial serial(115200);                  // 串口对象
 uint8_t last_state = ARMOR_STATE;     // 上次状态，用于初始化
 // 自瞄主程序对象
-ArmorFinder armor_finder(mcu_data.enemy_color, serial, PROJECT_DIR"/tools/para/", mcu_data.anti_top);
+ArmorFinder armor_finder(mcu_data.enemy_color, serial, PROJECT_DIR"/tools/para1-16-20220527/", mcu_data.anti_top);
 // 能量机关主程序对象
 Energy energy(serial, mcu_data.enemy_color);
 
@@ -58,7 +58,7 @@ int main(int argc, char *argv[]) {
     // save_video=true;
 
     shoot_delay_t=0.12;  // 射击延迟
-    shoot_v=15;         // 单速
+    shoot_v=14;         // 单速
 
     // for 大风车
     //show_process=false;
