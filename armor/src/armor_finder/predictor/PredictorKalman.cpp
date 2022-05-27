@@ -236,7 +236,7 @@ bool predictorKalman::predict(src_date &data, send_data &send, cv::Mat &im2show)
     char buff[40];
     sprintf(buff, "id: %f", tag_id);
     // int len=sizeof(buff);
-    sprintf(buff+5, " ; ");
+    sprintf(buff+6, " ; ");
     sprintf(buff+8, "dis: %f", s_distance);
     // std::cout<<buff<<std::endl;
     putText(im2show, buff, cv::Point(0,50), cv::FONT_HERSHEY_TRIPLEX, 1,
