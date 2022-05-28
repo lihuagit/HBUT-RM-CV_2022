@@ -266,7 +266,7 @@ Eigen::Vector3d predictorKalman::pnp_get_pc(const cv::Point2f p[4], int armor_nu
     std::vector<cv::Point2d> pu(p, p + 4);
     cv::Mat rvec, tvec;
 
-    if (armor_number == 0 || armor_number == 1 || armor_number==8 || armor_number==7 || armor_number==14 || armor_number==6 || armor_number==13)
+    if (armor_number == 0 || armor_number == 1 || armor_number==9 || armor_number==6 || armor_number==14 || armor_number==8 || armor_number==16)
         cv::solvePnP(pw_big, pu, F_MAT, C_MAT, rvec, tvec);
     else
         cv::solvePnP(pw_small, pu, F_MAT, C_MAT, rvec, tvec);
