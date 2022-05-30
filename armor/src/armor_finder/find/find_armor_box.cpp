@@ -233,4 +233,74 @@ bool ArmorFinder::findArmorBox(const cv::Mat &src, ArmorBox &box) {
     return true;
 }
 
+// 在给定的图像上寻找装甲板
+bool ArmorFinder::findArmorBoxes(const cv::Mat &src, ArmorBoxes &boxes) {
+    LightBlobs light_blobs; // 存储所有可能的灯条
+    ArmorBoxes armor_boxes; // 装甲板候选区
 
+// 寻找所有可能的灯条
+    CNT_TIME("blob", {
+        if (!findLightBlobs(src, light_blobs)) {
+            return false;
+        }
+    });
+    if (show_light_blobs && state==SEARCHING_STATE) {
+        showLightBlobs("light_blobs", src, light_blobs);
+        cv::waitKey(1);
+    }
+// 对灯条进行匹配得出装甲板候选区
+    CNT_TIME("boxes", {
+        if (!matchArmorBoxes(src, light_blobs, armor_boxes)) {
+            return false;
+        }
+    });
+    if (show_armor_boxes && state==SEARCHING_STATE) {
+        showArmorBoxes("boxes", src, armor_boxes);
+        cv::waitKey(1);
+    }
+// 如果分类器可用，则使用分类器对装甲板候选区进行筛选
+    if (classifier) {
+        CNT_TIME("classify: %d", {
+            for (auto &armor_box : armor_boxes) {
+                cv::Mat roi = src(armor_box.rect).clone();
+                cv::resize(roi, roi, cv::Size(48, 36));
+                int c = classifier(roi);
+                armor_box.id = c;
+            }
+        }, armor_boxes.size());
+// // 按照优先级对装甲板进行排序
+//         sort(armor_boxes.begin(), armor_boxes.end(), [&](const ArmorBox &a, const ArmorBox &b) {
+//             if (last_box.rect != cv::Rect2d()) {
+//                 return getPointLength(a.getCenter() - last_box.getCenter()) <
+//                        getPointLength(b.getCenter() - last_box.getCenter());
+//             } else {
+//                 return a < b;
+//             }
+//         });
+        for (auto &one_box : armor_boxes) {
+            if (one_box.id != 0) {
+                boxes.push_back(one_box);
+                // break;
+            }
+        }
+        if (save_labelled_boxes) {
+            for (const auto &one_box : armor_boxes) {
+                char filename[100];
+                sprintf(filename, PROJECT_DIR"/armor_box_photo/%s_%d.jpg", id2name[one_box.id].data(),
+                        time(nullptr) + clock());
+                auto box_roi = src(one_box.rect);
+                cv::resize(box_roi, box_roi, cv::Size(48, 36));
+                cv::imwrite(filename, box_roi);
+            }
+        }
+        if (boxes.size()==0) {
+            return false;
+        }
+        if (show_armor_boxes && state==SEARCHING_STATE) {
+            showArmorBoxesClass("class", src, armor_boxes);
+        }
+    } else { // 如果分类器不可用，则直接选取候选区中的第一个区域作为目标(往往会误识别)
+        boxes.push_back(armor_boxes[0]);
+    }
+    return true;
+}

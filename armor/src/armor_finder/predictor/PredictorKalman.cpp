@@ -10,10 +10,10 @@ predictorKalman::predictorKalman(){
     _Kalman::Matrix_xxd R;
     R(0, 0) = 0.01;
     for (int i = 1; i < S; i++) {
-        R(i, i) = 0.01;
+        R(i, i) = 10;
         // R(i, i) = 0.01;  //for dis   
     }
-    _Kalman::Matrix_zzd Q{4};
+    _Kalman::Matrix_zzd Q{1};
     _Kalman::Matrix_x1d init{0, 0};
     kalman = _Kalman(A, H, R, Q, init, 0);
     kalman_pitch = _Kalman(A, H, R, Q, init, 0);
@@ -51,7 +51,7 @@ std::vector<double> predictorKalman::predictor(double x,double t){
  * @return false 
  */
 bool predictorKalman::predict(src_date &data, send_data &send, cv::Mat &im2show){
-    auto &[detection, rec_yaw,rec_pitch, tag_id, t] = data;
+    auto &[detection, rec_yaw, rec_pitch, tag_id, t] = data;
     // rec_yaw=0;
     // rec_pitch=0;
 
@@ -170,6 +170,8 @@ bool predictorKalman::predict(src_date &data, send_data &send, cv::Mat &im2show)
     distance = p_pw.norm();                          // 目标距离（单位:m）
     double distance_xy = p_pw.topRows<2>().norm();
     double p_pitch = std::atan2(p_pw(2, 0), distance_xy);
+    // 计算抬枪补偿时 需要将pitch轴转化为世界坐标
+    p_pitch-=rec_pitch;
     // return true;
         // 计算抛物线
     // 先解二次方程

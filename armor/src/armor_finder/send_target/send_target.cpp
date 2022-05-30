@@ -13,7 +13,10 @@
 #include <iostream>
 #include <string.h>
 
-static bool sendTarget(Serial &serial, float x, float y /*, double z, uint16_t shoot_delay*/) {
+static bool sendTarget(Serial &serial, send_data sendData /*, double z, uint16_t shoot_delay*/) {
+    float x = sendData.send_yaw;
+    float y = sendData.send_pitch;
+    char mode = sendData.mode;
 // 显示fps
 #ifdef WITH_COUNT_FPS
     static time_t last_time = time(nullptr);
@@ -27,17 +30,18 @@ static bool sendTarget(Serial &serial, float x, float y /*, double z, uint16_t s
     fps += 1;
 #endif
 
-    uint8_t buff[10];
+    uint8_t buff[11];
     if(isnan(x) || isnan(y)) return false;
 
     buff[0] = 's';
+    buff[1] = mode;
     // printf("x:%f\n",x);
     float test = x;
-    memcpy(buff + 1, &test, 4);
+    memcpy(buff + 2, &test, 4);
     test = y;
-    memcpy(buff + 5, &test, 4);
+    memcpy(buff + 6, &test, 4);
     // printf("data: %f\n", *(float*)(buff + 1));
-    buff[9] = 'e';
+    buff[10] = 'e';
     return serial.WriteData(buff, sizeof(buff));
 }
 
@@ -58,7 +62,7 @@ bool ArmorFinder::sendBoxPosition(uint16_t shoot_delay) {
         if(is_predictorKalman) updateSendDateKalman();
         else updateSendDate();
     // }else updateSendDate();
-    return sendTarget(serial, sendData.send_yaw, sendData.send_pitch/*, (int16_t)sendData.send_dist, shoot_delay*/);
+    return sendTarget(serial, sendData/*, (int16_t)sendData.send_dist, shoot_delay*/);
 }
 
 /**
