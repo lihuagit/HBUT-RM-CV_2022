@@ -86,6 +86,7 @@ void ArmorFinder::run(cv::Mat &src) {
                     }
                     tracker = TrackerToUse::create();                       // 成功搜寻到装甲板，创建tracker对象
                     tracker->init(src, target_box.rect);
+                    if(is_anti_top) sendData.mode='Y';
                     state = TRACKING_STATE;
                     tracking_cnt = 0;
                     LOGM(STR_CTR(WORD_LIGHT_CYAN, "into track"));
@@ -106,17 +107,14 @@ void ArmorFinder::run(cv::Mat &src) {
     }
     
     if(state != STANDBY_STATE){
-        if(is_anti_top) { // 判断当前是否为反陀螺模式
-            antiTop();
-        }else if(target_box.rect != cv::Rect2d()) {
+        if(target_box.rect != cv::Rect2d()) {
             anti_top_cnt = 0;
-            time_seq.clear();
-            angle_seq.clear();
             sendBoxPosition(0);
-        }
-
-        if(target_box.rect != cv::Rect2d()){
             last_box = target_box;
+            double cen_x=target_box.rect.x + target_box.rect.width/2;
+            if(cen_x > src.cols/2 && is_anti_top)
+                state=SEARCHING_STATE;
+            sendData.mode='N';
         }
     }
     else  {

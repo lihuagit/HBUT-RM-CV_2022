@@ -33,6 +33,7 @@ static bool sendTarget(Serial &serial, send_data sendData /*, double z, uint16_t
     uint8_t buff[11];
     if(isnan(x) || isnan(y)) return false;
 
+    // 英雄用 mode为"Y" 时播弹
     buff[0] = 's';
     buff[1] = mode;
     // printf("x:%f\n",x);
@@ -42,6 +43,18 @@ static bool sendTarget(Serial &serial, send_data sendData /*, double z, uint16_t
     memcpy(buff + 6, &test, 4);
     // printf("data: %f\n", *(float*)(buff + 1));
     buff[10] = 'e';
+
+    // //LZC-添加
+    // buff[0] = 's';
+    // // printf("x:%f\n",x);
+    // float test = x;
+    // memcpy(buff + 1, &test, 4);
+    // test = y;
+    // memcpy(buff + 5, &test, 4);
+    // // printf("data: %f\n", *(float*)(buff + 1));
+    // buff[9] = 'e';
+    // //
+
     return serial.WriteData(buff, sizeof(buff));
 }
 
@@ -63,6 +76,7 @@ bool ArmorFinder::sendBoxPosition(uint16_t shoot_delay) {
         else updateSendDate();
     // }else updateSendDate();
     return sendTarget(serial, sendData/*, (int16_t)sendData.send_dist, shoot_delay*/);
+
 }
 
 /**

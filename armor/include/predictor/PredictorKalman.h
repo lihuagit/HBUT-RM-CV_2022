@@ -18,11 +18,22 @@
 #include <options.h>
 #include <armor_finder/send_data.h>
 
+typedef struct
+{
+    float input;        //输入数据
+    float out;          //输出数据
+    float num[1];       //滤波参数
+    float frame_period; //时间间隔
+} first_order_filter_type_t;
+
+
 constexpr int S=2;
 class predictorKalman{
     using _Kalman = Kalman<1, S>;
     _Kalman kalman_pitch;
     _Kalman kalman;
+    first_order_filter_type_t filter_yaw;
+    first_order_filter_type_t filter_pitch;
     Eigen::Matrix3d R_CI;           // 陀螺仪坐标系到相机坐标系旋转矩阵EIGEN-Matrix
     Eigen::Matrix3d F;              // 相机内参矩阵EIGEN-Matrix
     Eigen::Matrix<double, 1, 5> C;  // 相机畸变矩阵EIGEN-Matrix

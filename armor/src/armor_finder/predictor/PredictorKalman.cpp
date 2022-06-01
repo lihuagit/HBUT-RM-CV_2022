@@ -1,6 +1,36 @@
 #include <predictor/PredictorKalman.h>
 #include <math.h>
 
+    /**
+ * @brief          一阶低通滤波初始化
+ * @author         RM
+ * @param[in]      一阶低通滤波结构体
+ * @param[in]      间隔的时间，单位 s
+ * @param[in]      滤波参数
+ * @retval         返回空
+ */
+void first_order_filter_init(first_order_filter_type_t *first_order_filter_type, float frame_period, const float num[1])
+{
+    first_order_filter_type->frame_period = frame_period;
+    first_order_filter_type->num[0] = num[0];
+    first_order_filter_type->input = 0.0f;
+    first_order_filter_type->out = 0.0f;
+}
+
+/**
+ * @brief          一阶低通滤波计算
+ * @author         RM
+ * @param[in]      一阶低通滤波结构体
+ * @param[in]      间隔的时间，单位 s
+ * @retval         返回空
+ */
+void first_order_filter_cali(first_order_filter_type_t *first_order_filter_type, float input)
+{
+    first_order_filter_type->input = input;
+    first_order_filter_type->out =
+        first_order_filter_type->num[0] / (first_order_filter_type->num[0] + first_order_filter_type->frame_period) * first_order_filter_type->out + first_order_filter_type->frame_period / (first_order_filter_type->num[0] + first_order_filter_type->frame_period) * first_order_filter_type->input;
+}
+
 void predictorKalman::Init(double x,double t) { kalman.reset(x,t); }
 
 predictorKalman::predictorKalman(){
@@ -10,10 +40,10 @@ predictorKalman::predictorKalman(){
     _Kalman::Matrix_xxd R;
     R(0, 0) = 0.01;
     for (int i = 1; i < S; i++) {
-        R(i, i) = 10;
+        R(i, i) = 100;
         // R(i, i) = 0.01;  //for dis   
     }
-    _Kalman::Matrix_zzd Q{1};
+    _Kalman::Matrix_zzd Q{4};
     _Kalman::Matrix_x1d init{0, 0};
     kalman = _Kalman(A, H, R, Q, init, 0);
     kalman_pitch = _Kalman(A, H, R, Q, init, 0);
@@ -30,6 +60,11 @@ predictorKalman::predictorKalman(){
     cv::cv2eigen(R_CI_MAT, R_CI);
     cv::cv2eigen(F_MAT, F);
     cv::cv2eigen(C_MAT, C);
+
+    float a[1]={0.07};
+    // 一阶低通滤波初始化
+    first_order_filter_init(&filter_yaw, 0.01, a);
+    first_order_filter_init(&filter_pitch, 0.01, a);
 }
 
 std::vector<double> predictorKalman::predictor(double x,double t){
@@ -64,6 +99,7 @@ bool predictorKalman::predict(src_date &data, send_data &send, cv::Mat &im2show)
 	double z_pos = m_pc(2, 0);
 	double distance = sqrt(x_pos * x_pos + y_pos * y_pos + z_pos * z_pos);
 
+    // for debug
     // std::cout << "x_pos y_pos distance" << std::endl;
     // std::cout << x_pos <<" : "<< y_pos <<" : " << distance << std::endl;
 
@@ -92,7 +128,7 @@ bool predictorKalman::predict(src_date &data, send_data &send, cv::Mat &im2show)
         kalman_pitch.reset(m_pitch, t);
         last_yaw = m_yaw;
         last_pitch = m_pitch;
-        std::cout << "kalman reset" << std::endl;
+        std::cout << "kalman reset by yaw" << std::endl;
         return false;
     }
     
@@ -102,7 +138,7 @@ bool predictorKalman::predict(src_date &data, send_data &send, cv::Mat &im2show)
         kalman_pitch.reset(m_pitch, t);
         last_yaw = m_yaw;
         last_pitch = m_pitch;
-        std::cout << "kalman reset" << std::endl;
+        std::cout << "kalman reset by pitch" << std::endl;
         return false;
     }
 
@@ -124,35 +160,28 @@ bool predictorKalman::predict(src_date &data, send_data &send, cv::Mat &im2show)
     last_speed = state(1, 0);
     double c_yaw = state(0, 0);                                   // current yaw: yaw的滤波值，单位弧度
     double c_speed = state(1, 0) * m_pc.norm();                      // current speed: 角速度转线速度，单位m/s
-
-//    std::cout <<"the front is"<<  m_pc.norm() << std::endl;
-
-    // std::cout<<m_pitch<<std::endl;
-
-
-    // std::cout <<"the back is"<<  m_pc.norm() << std::endl;
-
-    // std::cout <<  "cp_pitch" << std::endl;
-    // std::cout <<  cp_pitch << std::endl;
-    // std::cout << "c_speed" << std::endl;
-    // std::cout << c_speed << std::endl;
-    // std::cout << " m_pc.norm()" << std::endl;
-    // std::cout <<  m_pc.norm() << std::endl;
     
     double predict_time = ( m_pc.norm() / shoot_v ) * 1 + shoot_delay_t;           // 预测时间=发射延迟+飞行时间（单位:s）
     predict_time*=1000;
-    // std::cout << " predict_time" << std::endl;
-    // std::cout << predict_time << std::endl;
 
     /// 对yaw/pitch预测
-    double p_yaw = c_yaw + atan2(predict_time * c_speed*0.3, m_pc.norm());     // predict yaw: yaw的预测值，直线位移转为角度，单位弧度
-    double pp_pitch = cp_pitch + atan2(predict_time * cp_speed *0.1, m_pc.norm());     // predict pitch: pitch的预测值，直线位移转为角度，单位弧度
-    
-    // std::cout <<  "predict_time * cp_speed:" << std::endl;
-    // std::cout <<  predict_time * cp_speed << std::endl;
+    double p_yaw = c_yaw + atan2(predict_time * c_speed * 1 , m_pc.norm());     // predict yaw: yaw的预测值，直线位移转为角度，单位弧度
+    double pp_pitch = cp_pitch + atan2(predict_time * cp_speed * 1, m_pc.norm());     // predict pitch: pitch的预测值，直线位移转为角度，单位弧度    
+    // std::cout <<  "cp_pitch is :" <<cp_pitch<< std::endl;
+    // std::cout <<  "pp_pitch is :" <<pp_pitch<< std::endl;
+
+
+    //问题：
+    //1.首先是3-4m定点击打可以达到要求，导师距离超过后4m则不行。
+    //2.对yaw预测可以大致达到效果，即是有效果；但pitch轴预测不行，感觉是方向反了或是预测值给小了
+    //3.步兵小陀螺开云台后，对云台有较大干扰，会导致云台偏离识别点，开预测时则云台十分抖动；不开预测则固定角度偏转
+    //4.
+
     // 绝对角度转相对相对角度
     p_yaw+=rec_yaw;
     pp_pitch+=rec_pitch;
+    pp_pitch=mc_pitch;
+
     if(!is_predictor){
         pp_pitch=mc_pitch;
         p_yaw=mc_yaw;
@@ -160,18 +189,17 @@ bool predictorKalman::predict(src_date &data, send_data &send, cv::Mat &im2show)
 
     double length = sqrt(m_pc(0, 0) * m_pc(0, 0) + m_pc(1, 0) * m_pc(1, 0));
     Eigen::Vector3d c_pw{length * cos(c_yaw), length * sin(c_yaw), m_pc(2, 0)};//反解位置(世界坐标系)
-    // Eigen::Vector3d p_pw{length * cos(p_yaw), length * sin(p_yaw), m_pc(2, 0)};
-    // Eigen::Vector3d p_pw{tan(p_yaw)*z_pos, tan(pp_pitch)*z_pos, m_pc(2, 0)};
-    // Eigen::Vector3d p_pw{tan(p_yaw)*z_pos,m_pc(1, 0), m_pc(2, 0)};
-    Eigen::Vector3d p_pw{tan(p_yaw)*z_pos,tan(-pp_pitch)*sqrt(x_pos*x_pos + z_pos * z_pos), m_pc(2, 0)};
+    Eigen::Vector3d p_pw{tan(p_yaw)*z_pos,tan(-pp_pitch)*sqrt((tan(p_yaw)*z_pos)*(tan(p_yaw)*z_pos) + z_pos * z_pos), m_pc(2, 0)};
 
     //std::cout<<"p_pw"<<p_pw[0]<<std::endl;
     /// 计算抬枪补偿
-    distance = p_pw.norm();                          // 目标距离（单位:m）
+    // distance = p_pw.norm();                          // 目标距离（单位:m）
     double distance_xy = p_pw.topRows<2>().norm();
     double p_pitch = std::atan2(p_pw(2, 0), distance_xy);
+    // p_pitch -= rec_pitch;
+    // p_pitch -= 0.06;
     // 计算抬枪补偿时 需要将pitch轴转化为世界坐标
-    p_pitch-=rec_pitch;
+    // p_pitch-=rec_pitch;
     // return true;
         // 计算抛物线
     // 先解二次方程
@@ -186,6 +214,7 @@ bool predictorKalman::predict(src_date &data, send_data &send, cv::Mat &im2show)
     double fly_time = sqrt(t_2);                                       // 子弹飞行时间（单位:s）
     // 解出抬枪高度，即子弹下坠高度
     double height = 0.5 * 9.8 * t_2;
+    // height = 0.2;
 
     //std::cout << m_pw << std::endl;
     float bs = shoot_v;
@@ -225,21 +254,21 @@ bool predictorKalman::predict(src_date &data, send_data &send, cv::Mat &im2show)
 	double s_mc_pitch = atan(s_tan_pitch);
     double s_mc_yaw = atan(s_tan_yaw);
 
-    
-    // std::cout << "s_mc_yaw s_mc_pitch" << std::endl;
-    // std::cout << s_mc_yaw <<" : "<< s_mc_pitch << std::endl;
-    
     /// update发送数据，目前与电控的协议是yaw绝对坐标， pitch相对坐标
-    //send.send_yaw=m_yaw;
-    ////
-    // s_mc_yaw=m_yaw;
-    send.send_yaw=s_mc_yaw-rec_yaw;
+    s_mc_yaw-=rec_yaw;
+    // s_mc_pitch-=rec_pitch;
+    // 使用一阶低通滤波对sendData进行滤波
+    first_order_filter_cali(&filter_yaw, s_mc_yaw);
+    first_order_filter_cali(&filter_pitch, s_mc_pitch);
+    s_mc_yaw = filter_yaw.out;
+    s_mc_pitch = filter_pitch.out;
+    send.send_yaw=s_mc_yaw;
     send.send_pitch=s_mc_pitch;
     char buff[40];
     sprintf(buff, "id: %f", tag_id);
     // int len=sizeof(buff);
     sprintf(buff+6, " ; ");
-    sprintf(buff+8, "dis: %f", s_distance);
+    sprintf(buff+8, "dis: %f", distance);
     // std::cout<<buff<<std::endl;
     putText(im2show, buff, cv::Point(0,50), cv::FONT_HERSHEY_TRIPLEX, 1,
             cv::Scalar(0, 255, 0));
@@ -268,7 +297,7 @@ Eigen::Vector3d predictorKalman::pnp_get_pc(const cv::Point2f p[4], int armor_nu
     std::vector<cv::Point2d> pu(p, p + 4);
     cv::Mat rvec, tvec;
 
-    if (armor_number == 0 || armor_number == 1 || armor_number==9 || armor_number==6 || armor_number==14 || armor_number==8 || armor_number==16)
+    if (true || armor_number == 0 || armor_number == 1 || armor_number==9 || armor_number==6 || armor_number==14 || armor_number==8 || armor_number==16)
         cv::solvePnP(pw_big, pu, F_MAT, C_MAT, rvec, tvec);
     else
         cv::solvePnP(pw_small, pu, F_MAT, C_MAT, rvec, tvec);

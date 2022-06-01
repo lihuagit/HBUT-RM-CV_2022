@@ -16,6 +16,9 @@
     #include <camera/camera_api.h>
 #endif
 
+#define ARMOR_CONFIG 0
+#define ENERGY_CONFIG 1
+
 class CameraWrapper: public WrapperHead {
     friend void cameraCallback(CameraHandle hCamera, BYTE *pFrameBuffer, tSdkFrameHead* pFrameHead,PVOID pContext);
 private:
@@ -40,9 +43,9 @@ private:
     RoundQueue<cv::Mat, 2> src_queue;
 public:
     int gain;
-    int exposure;
+    int config;
 
-    CameraWrapper(int exposure, int gain, int camera_mode=1, const std::string &n="NULL");
+    CameraWrapper(int config, int gain, int camera_mode=1, const std::string &n="NULL");
     ~CameraWrapper() final;
 
     bool init() final;

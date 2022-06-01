@@ -33,8 +33,9 @@ McuData mcu_data = {    // 单片机端回传结构体
         0,              // 当前云台pitch角
        ARMOR_STATE,    // 当前状态，自瞄-大符-小符
         // BIG_ENERGY_STATE,
+        // SMALL_ENERGY_STATE,
         0,              // 云台角度标记位
-        0,              // 是否为反陀螺模式
+        1,              // 是否为反陀螺模式
         ENEMY_RED,      // 敌方颜色
         0,              // 能量机关x轴补偿量
         0,              // 能量机关y轴补偿量
@@ -45,7 +46,7 @@ WrapperHead *video = nullptr;    // 云台摄像头视频源
 Serial serial(115200);                  // 串口对象
 uint8_t last_state = ARMOR_STATE;     // 上次状态，用于初始化
 // 自瞄主程序对象
-ArmorFinder armor_finder(mcu_data.enemy_color, serial, PROJECT_DIR"/tools/para111/", mcu_data.anti_top);
+ArmorFinder armor_finder(mcu_data.enemy_color, serial, PROJECT_DIR"/tools/para_SJ/", mcu_data.anti_top);
 // 能量机关主程序对象
 Energy energy(serial, mcu_data.enemy_color);
 
@@ -53,7 +54,7 @@ int main(int argc, char *argv[]) {
 ///////////////////////调参区begin///////////////////
     show_armor_box=true;
     show_origin=true;
-    // show_armor_box=true;
+    show_armor_boxes=true;
     wait_uart=true;
     // save_video=true;
 
@@ -63,8 +64,8 @@ int main(int argc, char *argv[]) {
     // for 大风车
     //show_process=false;
     //show_energy=false;
-    //show_process=true;
-    //show_energy=true;
+    show_process=true;
+    show_energy=true;
     
     // 预测器
     is_predictor=true;
@@ -88,7 +89,7 @@ int main(int argc, char *argv[]) {
     while (true) {
         // 打开视频源
         if (from_camera) {
-            video = new CameraWrapper(ARMOR_CAMERA_EXPOSURE, ARMOR_CAMERA_GAIN, 2);
+            video = new CameraWrapper(ARMOR_CONFIG, ARMOR_CAMERA_GAIN, 2);
         } else {
             // video = new VideoWrapper(PROJECT_DIR"/video/1.mp4");
             // video = new VideoWrapper(PROJECT_DIR"/video/8-11东大3No.4.mp4");
@@ -120,7 +121,7 @@ int main(int argc, char *argv[]) {
                         destroyAllWindows();
                         if (from_camera) {
                             delete video;
-                            video = new CameraWrapper(ENERGY_CAMERA_EXPOSURE, ENERGY_CAMERA_GAIN, 2);
+                            video = new CameraWrapper(ENERGY_CONFIG, ENERGY_CAMERA_GAIN, 2);
                             if (video->init()) {
                                 LOGM("video_gimbal source initialization successfully.");
                             } else {
@@ -152,7 +153,7 @@ int main(int argc, char *argv[]) {
                         destroyAllWindows();
                         if (from_camera) {
                             delete video;
-                            video = new CameraWrapper(ARMOR_CAMERA_EXPOSURE, ARMOR_CAMERA_GAIN, 2/*, "armor"*/);
+                            video = new CameraWrapper(ARMOR_CONFIG, ARMOR_CAMERA_GAIN, 2/*, "armor"*/);
                             if (video->init()) {
                                 LOGM("video_gimbal source initialization successfully.");
                             } else {

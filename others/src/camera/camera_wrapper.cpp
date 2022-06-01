@@ -11,7 +11,7 @@
 using namespace std;
 using namespace cv;
 
-CameraWrapper::CameraWrapper(int exposure, int gain, int camera_mode, const std::string &n) :
+CameraWrapper::CameraWrapper(int config, int gain, int camera_mode, const std::string &n) :
         name(n),
         init_done(false),
         mode(camera_mode),
@@ -21,7 +21,7 @@ CameraWrapper::CameraWrapper(int exposure, int gain, int camera_mode, const std:
         rgb_buffer(nullptr),
         channel(3),
         gain(gain),
-        exposure(exposure){
+        config(config){
 }
 
 void cameraCallback(CameraHandle hCamera, BYTE *pFrameBuffer, tSdkFrameHead* pFrameHead,PVOID pContext){
@@ -84,19 +84,25 @@ bool CameraWrapper::init() {
     }
     LOGM("successfully loaded %s!", filepath);
 #elif defined(Linux)
-    // 都相机配置文件，armor_lihua_6.Config 这个文件读一遍发黄，读两遍正常   奇怪。。。
-    CameraReadParameterFromFile(h_camera, PROJECT_DIR"/others/armor_lihua_3.Config");
-    CameraReadParameterFromFile(h_camera, PROJECT_DIR"/others/armor_lihua_3.Config");
-    CameraReadParameterFromFile(h_camera, PROJECT_DIR"/others/armor_lihua_3.Config");
+
     // CameraSetGain(h_camera,152,85,151);
     // CameraLoadParameter(h_camera, PARAMETER_TEAM_A);
     // CameraSetAeState(h_camera, false);
     // CameraSetExposureTime(h_camera, exposure * 1000);
     // CameraSetAnalogGain(h_camera, gain);
 #endif
-    // CameraReadParameterFromFile(h_camera, PROJECT_DIR"/others/armor_lihua_3.config");
-    // CameraReadParameterFromFile(h_camera, PROJECT_DIR"/others/armor_lihua_3.config");
-    // CameraLoadParameter(h_camera, PARAMETER_TEAM_A);
+    // 都相机配置文件，armor_lihua_6.Config 这个文件读一遍发黄，读两遍正常   奇怪。。。
+    if(config == ARMOR_CONFIG){
+        CameraReadParameterFromFile(h_camera, PROJECT_DIR"/others/armor_lihua_3.Config");
+        CameraReadParameterFromFile(h_camera, PROJECT_DIR"/others/armor_lihua_3.Config");
+        CameraReadParameterFromFile(h_camera, PROJECT_DIR"/others/armor_lihua_3.Config");
+    }
+    else if(config == ENERGY_CONFIG){
+        CameraReadParameterFromFile(h_camera, PROJECT_DIR"/others/armor_lihua_3_energy.Config");
+        CameraReadParameterFromFile(h_camera, PROJECT_DIR"/others/armor_lihua_3_energy.Config");
+        CameraReadParameterFromFile(h_camera, PROJECT_DIR"/others/armor_lihua_3_energy.Config");
+    }
+
     double t;
     int g;
     CameraGetExposureTime(h_camera, &t);

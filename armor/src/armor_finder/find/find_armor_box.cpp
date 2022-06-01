@@ -197,14 +197,21 @@ bool ArmorFinder::findArmorBox(const cv::Mat &src, ArmorBox &box) {
             }
         }, armor_boxes.size());
 // 按照优先级对装甲板进行排序
-        sort(armor_boxes.begin(), armor_boxes.end(), [&](const ArmorBox &a, const ArmorBox &b) {
-            if (last_box.rect != cv::Rect2d()) {
-                return getPointLength(a.getCenter() - last_box.getCenter()) <
-                       getPointLength(b.getCenter() - last_box.getCenter());
-            } else {
-                return a < b;
-            }
-        });
+        if(is_anti_top){
+            sort(armor_boxes.begin(), armor_boxes.end(), [&](const ArmorBox &a, const ArmorBox &b) {
+                return a.rect.x < b.rect.y;
+            });
+        }
+        else{
+            sort(armor_boxes.begin(), armor_boxes.end(), [&](const ArmorBox &a, const ArmorBox &b) {
+                if (last_box.rect != cv::Rect2d()) {
+                    return getPointLength(a.getCenter() - last_box.getCenter()) <
+                        getPointLength(b.getCenter() - last_box.getCenter());
+                } else {
+                    return a < b;
+                }
+            });
+        }
         for (auto &one_box : armor_boxes) {
             if (one_box.id != 0) {
                 box = one_box;

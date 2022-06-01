@@ -40,6 +40,8 @@ void uartReceive(Serial *pSerial) {
         if(strlen(buffer)>=5){
             char mode=buffer[0];
             char mode_shoot=buffer[1];
+            mode='#';
+            mode_shoot='#';
             memcpy(&(armor_finder.word_yaw), buffer+2, 4);
             memcpy(&(armor_finder.word_pitch), buffer+6, 4);
             // sscanf(buffer+1,"%f",&(armor_finder.word_yaw));
@@ -47,9 +49,9 @@ void uartReceive(Serial *pSerial) {
             // std::cout<<armor_finder.word_yaw<<std::endl;
             // std::cout<<"armor_finder.word_pitch: ";
             // std::cout<<armor_finder.word_pitch<<std::endl;
-            //  energy.word_yaw=armor_finder.word_yaw;
+             energy.word_yaw=armor_finder.word_yaw;
             // energy.word_pitch=armor_finder.word_pitch;
-            //std::cout<<"mode_1 is::  "<<mode_1<<std::endl;
+            // std::cout<<"mode is::  "<<mode<<std::endl;
             // 预测模式
             if(mode == 'Y'){
                 mcu_data.state=ARMOR_STATE;
@@ -99,7 +101,7 @@ cv::VideoWriter initVideoWriter(const std::string &filename_prefix) {
 bool checkReconnect(bool is_camera_connect) {
     if (!is_camera_connect) {
         int curr_gain = ((CameraWrapper* )video)->gain;
-        int curr_exposure = ((CameraWrapper* )video)->exposure;
+        int curr_exposure = ((CameraWrapper* )video)->config;
         delete video;
         video = new CameraWrapper(curr_exposure, curr_gain, 0/*, "armor"*/);
         is_camera_connect = video->init();
