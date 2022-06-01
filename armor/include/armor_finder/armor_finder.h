@@ -112,15 +112,12 @@ public:
 private:
     typedef cv::TrackerKCF TrackerToUse;                // Tracker类型定义
 
-    typedef enum{
-        SEARCHING_STATE, TRACKING_STATE, STANDBY_STATE
-    } State;                                            // 自瞄状态枚举定义
 
     systime frame_time;                                 // 当前帧对应时间
     const uint8_t &enemy_color;                         // 敌方颜色，引用外部变量，自动变化
     const uint8_t &is_anti_top;                         // 进入反陀螺，引用外部变量，自动变化
-    State state;                                        // 自瞄状态对象实例
     ArmorBox target_box, last_box;                      // 目标装甲板
+    ArmorBoxes target_boxes;
     int anti_switch_cnt;                                // 防止乱切目标计数器
     cv::Ptr<cv::Tracker> tracker;                       // tracker对象实例
     Classifier classifier;                              // CNN分类器对象实例，用于数字识别
@@ -136,11 +133,12 @@ private:
 
     bool findLightBlobs(const cv::Mat &src, LightBlobs &light_blobs);
     bool findArmorBox(const cv::Mat &src, ArmorBox &box);
+    bool findArmorBoxes(const cv::Mat &src, ArmorBoxes &boxes);
     bool matchArmorBoxes(const cv::Mat &src, const LightBlobs &light_blobs, ArmorBoxes &armor_boxes);
 
     bool stateSearchingTarget(cv::Mat &src);            // searching state主函数
     bool stateTrackingTarget(cv::Mat &src);             // tracking state主函数
-    bool stateStandBy();                                // stand by state主函数（已弃用）
+    bool stateStandBy(cv::Mat &src);                                // stand by state主函数（已弃用）
 
     void antiTop();                                     // 反小陀螺
 
@@ -154,6 +152,11 @@ private:
     bool sendBoxPosition(uint16_t shoot);               // 和主控板通讯
     void LinearSmooth72(std::queue<double> &Input, int size);// 对距离滤波
 public:
+    typedef enum{
+        SEARCHING_STATE, TRACKING_STATE, STANDBY_STATE
+    } State;                                            // 自瞄状态枚举定义
+    
+    State state;                                        // 自瞄状态对象实例
     void run(cv::Mat &src);                             // 自瞄主函数
     predictorKalman kal_yaw_pitch;                            // kalman滤波器                   
 

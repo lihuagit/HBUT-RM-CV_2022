@@ -25,6 +25,8 @@
 #include <show_images/show_images.h>
 #include <opencv2/highgui.hpp>
 #include <armor_finder/armor_finder.h>
+#include <ctime>
+#include <chrono>
 
 std::map<int, string> id2name = {                               //装甲板id到名称的map
         {-1, "OO"},{ 0, "NO"},
@@ -59,9 +61,15 @@ ArmorFinder::ArmorFinder(uint8_t &color, Serial &u, const string &paras_folder, 
         classifier(paras_folder),
         contour_area(0),
         tracking_cnt(0) {
+        sendData.mode = 'N';
 }
 
 void ArmorFinder::run(cv::Mat &src) {
+    static int cnt_useless = -1;
+    static int fps = 0, fps_count = 0;
+    static auto t1 = std::chrono::system_clock::now();
+    static int last_cnt=0;
+
     im2show=src.clone();
     getsystime(frame_time); //　获取当前帧时间(不是足够精确)
 //    stateSearchingTarget(src);                    // for debug
@@ -91,25 +99,34 @@ void ArmorFinder::run(cv::Mat &src) {
             }
             break;
         case STANDBY_STATE:
+            stateStandBy(src); // currently meaningless
+            break;
         default:
-            stateStandBy(); // currently meaningless
+            break;
     }
-end:
-    if(is_anti_top) { // 判断当前是否为反陀螺模式
-        antiTop();
-    }else if(target_box.rect != cv::Rect2d()) {
-        anti_top_cnt = 0;
-        time_seq.clear();
-        angle_seq.clear();
-        sendBoxPosition(0);
+    
+    if(state != STANDBY_STATE){
+        if(is_anti_top) { // 判断当前是否为反陀螺模式
+            antiTop();
+        }else if(target_box.rect != cv::Rect2d()) {
+            anti_top_cnt = 0;
+            time_seq.clear();
+            angle_seq.clear();
+            sendBoxPosition(0);
+        }
+
+        if(target_box.rect != cv::Rect2d()){
+            last_box = target_box;
+        }
     }
-
-    // if(target_box.rect != cv::Rect2d() && is_kalman){
-    //     kal_run();
-    // }
-
-    if(target_box.rect != cv::Rect2d()){
-        last_box = target_box;
+    else  {
+        // 跟丢 || 切换装甲板时 保留缓冲时间 一定程度减少程序不稳定频繁切换装甲板
+        if(last_box.id != target_box.id) last_cnt++;
+        else last_cnt=0;
+        if(target_box.rect != cv::Rect2d()){
+            if( last_cnt >= 5 ) last_box = target_box, last_cnt = 0;
+            sendBoxPosition(0);
+        }
     }
 
     if (show_armor_box) {                 // 根据条件显示当前目标装甲板
@@ -117,6 +134,18 @@ end:
             // showArmorBox("box", src, target_box,kal_rect);
         // else showArmorBox("box", src, target_box);
         showArmorBox("box", src, target_box);
+        
+        fps_count++;
+        auto t2 = std::chrono::system_clock::now();
+        if (duration_cast<std::chrono::milliseconds>(t2 - t1).count() >= 1000) {
+            fps = fps_count;
+            fps_count = 0;
+            t1 = t2;
+        }
+        char TextFPS[20];
+        sprintf(TextFPS,"fps={ %d }\0",fps);
+        cv::putText(im2show, TextFPS, {10, 25}, cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(255, 0, 0));
+
         cv::imshow("kalman",im2show);
         cv::waitKey(1);
     }

@@ -63,6 +63,11 @@ void showArmorBoxesClass(std::string window_names, const cv::Mat &src, const Arm
     } else if (src.type() == CV_8UC3) { //RGB 彩色
         image2show = src.clone();
     }
+    int w=image2show.size().width;
+    int h=image2show.size().height;
+    line(image2show,Point2d(0,h/2),Point2d(w,h/2),Scalar(0,0,255),1);
+    line(image2show,Point2d(w/2,0),Point2d(w/2,h),Scalar(0,0,255),1);
+
     for (const auto &box : boxes) {
         if(box.id != 0) {
             rectangle(image2show, box.rect, Scalar(0, 255, 0), 1);
@@ -70,14 +75,22 @@ void showArmorBoxesClass(std::string window_names, const cv::Mat &src, const Arm
             if (box.id == -1)
                 putText(image2show, id2name[box.id], Point(box.rect.x + 2, box.rect.y + 2), cv::FONT_HERSHEY_TRIPLEX, 1,
                         Scalar(0, 255, 0));
-            else if (1 <= box.id && box.id < 8)
+            else if (1 <= box.id && box.id <= 8)
                 putText(image2show, id2name[box.id], Point(box.rect.x + 2, box.rect.y + 2), cv::FONT_HERSHEY_TRIPLEX, 1,
                         Scalar(255, 0, 0));
-            else if (8 <= box.id && box.id < 15)
+            else if (9 <= box.id && box.id <= 16)
                 putText(image2show, id2name[box.id], Point(box.rect.x + 2, box.rect.y + 2), cv::FONT_HERSHEY_TRIPLEX, 1,
                         Scalar(0, 0, 255));
             else if (box.id != 0)
                 LOGE_INFO("Invalid box id:%d!", box.id);
+                
+            // 画线
+            for (int i = 0; i < 4; i++)
+                cv::line(image2show, box.pts[i], box.pts[(i + 1) % 4], Scalar(0,0,255), 2);
+
+            // 画点
+            for(int i=0;i<4;i++)
+                cv::circle(image2show,box.pts[i],i*3,cv::Scalar(255,255,255),1);
         }
     }
     imshow(window_names, image2show);

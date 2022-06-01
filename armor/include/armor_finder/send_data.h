@@ -13,6 +13,7 @@ struct send_data
 {
     /* data */
     // 发送数据包
+    char mode;
     float send_yaw;
     float send_pitch;
     float send_dist;

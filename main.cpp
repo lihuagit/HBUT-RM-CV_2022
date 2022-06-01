@@ -81,6 +81,8 @@ int main(int argc, char *argv[]) {
         cout << "Input 1 for camera, 0 for video files" << endl;
         // cin >> from_camera;
         from_camera=true;
+        // from_camera=false;
+        // armor_finder.state = armor_finder.STANDBY_STATE;
     }
     bool flag=true;
     while (true) {
