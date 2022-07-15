@@ -148,7 +148,7 @@ sudo ./run
 
 我们假设车辆在较短的时间内的运动都是匀速直线运动模型，模型公式如下：
 
-![ekf_model](C:\Users\31909\Desktop\ekf_model.png)
+![ekf_model](https://github.com/lihuagit/SJTU-RM-CV-2019/blob/v1.2/ekf_model.png)
 
 其中 z 轴假设不变，之后也可以尝试改成变的，对爬坡可能有帮助。
 
