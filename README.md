@@ -120,7 +120,7 @@ sudo ./run
 | ArmorBox        | 装甲板位置<br />装甲板的两个灯条<br />装甲板颜色<br />装甲板数字id | 无                     | 装甲板类定义                                            |
 
 ## 五、程序运行基本流程
-![HBUT-RM2022代码流程图](https://github.com/lihuagit/SJTU-RM-CV-2019/HBUT-RM2022%E4%BB%A3%E7%A0%81%E6%B5%81%E7%A8%8B%E5%9B%BE.png)
+![HBUT-RM2022代码流程图](https://github.com/lihuagit/SJTU-RM-CV-2019/blob/v1.2/HBUT-RM2022%E4%BB%A3%E7%A0%81%E6%B5%81%E7%A8%8B%E5%9B%BE.png)
 
 ## 六、识别方式
 
